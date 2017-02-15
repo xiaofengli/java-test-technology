@@ -1,0 +1,850 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;\f2\fmodern\fcharset0 Courier;
+\f3\fnil\fcharset0 Monaco;\f4\fnil\fcharset0 AndaleMono;\f5\fnil\fcharset204 PTSans-Regular;
+}
+{\colortbl;\red255\green255\blue255;\red127\green0\blue85;\red0\green0\blue192;\red42\green0\blue255;
+\red100\green100\blue100;\red106\green62\blue62;\red0\green0\blue0;\red245\green245\blue245;\red38\green38\blue38;
+\red0\green0\blue117;\red223\green223\blue223;\red82\green0\blue83;\red83\green85\blue2;\red115\green0\blue2;
+\red17\green17\blue22;\red103\green14\blue8;\red16\green121\blue2;\red11\green84\blue83;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 Java Test Technology\
+\
+@author: xiaofeng li\
+@lastEdit: 02-14-2017\
+\
+\
+Chapter 1 Junit\
+ref: http://www.ibm.com/developerworks/java/tutorials/j-junit4/\
+\
+Junit 4 is the main stream at the pioint, junit 4 has a few new new features like 
+\f1 \expnd0\expndtw0\kerning0
+Parametric tests, 
+\f0 \kerning1\expnd0\expndtw0 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1 \cf0 \expnd0\expndtw0\kerning0
+Exception tests, Timeout tests, Flexible fixtures, An easy way to ignore tests and A new way to logically group tests.\
+\
+1. 1 Annotations\
+\
+Junit4 your test method does not need to name it to start with "testXXX", @Test is in used.\
+  Other annotations you need to know is @Before, @BeforeClass, @Test, @Ignore, @After, @AfterClass.\
+
+\f0 \kerning1\expnd0\expndtw0 \
+The following is a basic example,\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2 \cf0 \expnd0\expndtw0\kerning0
+import java.util.regex.Matcher;\
+import java.util.regex.Pattern;\
+\
+import org.junit.BeforeClass;\
+import org.junit.Test;\
+import static org.junit.Assert.assertFalse;\
+\
+public class RegularExpressionTest \{\
+ private static String zipRegEx = "^\\\\d\{5\}([\\\\-]\\\\d\{4\})?$";\
+ private static Pattern pattern;\
+  \
+ @BeforeClass\
+ public static void setUpBeforeClass() throws Exception \{\
+  pattern = Pattern.compile(zipRegEx);\
+ \}\
+\
+ @Test\
+ public void verifyZipCodeNoMatch() throws Exception\{		 \
+  Matcher mtcher = this.pattern.matcher("2211");\
+  boolean notValid = mtcher.matches();		\
+  assertFalse("Pattern did validate zip code", notValid);\
+ \}\
+\}\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+1.2 Testing Exceptions\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2 \cf0 \expnd0\expndtw0\kerning0
+import java.util.regex.Matcher;\
+import java.util.regex.Pattern;\
+\
+import org.junit.BeforeClass;\
+import org.junit.Test;\
+\
+public class RegularExpressionJUnit4Test \{\
+ private static String zipRegEx = "^\\\\d\{5\}([\\\\-]\\\\d\{4\})?$";\
+ private static Pattern pattern;\
+\
+ @BeforeClass\
+ public static void setUpBeforeClass() throws Exception \{\
+  pattern = Pattern.compile(zipRegEx);\
+ \}\
+\
+ @Test(expected=IndexOutOfBoundsException.class)\
+ public void verifyZipCodeGroupException() throws Exception\{		\
+  Matcher mtcher = this.pattern.matcher("22101-5051");\
+  boolean isValid = mtcher.matches();			\
+  mtcher.group(2);		\
+ \}\
+\}\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+1.3 Testing timeout\
+
+\f1 \expnd0\expndtw0\kerning0
+In JUnit 4, a test case can take a timeout value as a parameter.\
+
+\f0 \kerning1\expnd0\expndtw0 \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2 \cf0 \expnd0\expndtw0\kerning0
+@Test(timeout=1)\
+public void verifyFastZipCodeMatch() throws Exception\{		\
+ Pattern pattern = Pattern.compile("^\\\\d\{5\}([\\\\-]\\\\d\{4\})?$"); \
+ Matcher mtcher = pattern.matcher("22011");\
+ boolean isValid = mtcher.matches();		\
+ assertTrue("Pattern did not validate zip code", isValid);\
+\}\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+1.4 
+\f1 \expnd0\expndtw0\kerning0
+The @Ignore annotation
+\b \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2\b0 \cf0 @Ignore("this regular expression isn't working yet")\
+@Test\
+public void verifyZipCodeMatch() throws Exception\{		\
+ Pattern pattern = Pattern.compile("^\\\\d\{5\}([\\\\-]\\\\d\{4\})"); \
+ Matcher mtcher = pattern.matcher("22011");\
+ boolean isValid = mtcher.matches();		\
+ assertTrue("Pattern did not validate zip code", isValid);\
+\}\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+1.5 Testing fixtures\
+@Before, @BeforeClass, @AfterClass, @After,\
+\
+The above annotations will ease you by let you run a fixture for every test or just once for an entire class. Two for class-level and two for method-level.\
+\
+For example, the following will print out "testme" twice,  so if you have anything you want to execute before each @Test you can put them in @Before.\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs22 \cf2 import\cf0  java.util.regex.Matcher;\
+\cf2 import\cf0  java.util.regex.Pattern;\
+\cf2 import\cf0  org.junit.Before;\
+\cf2 import\cf0  \ul org.junit.BeforeClass\ulnone ;\
+\cf2 import\cf0  org.junit.Test;\
+\cf2 import\cf0  \cf2 static\cf0  \ul org.junit.Assert.assertTrue\ulnone ;\
+\cf2 import\cf0  \cf2 static\cf0  org.junit.Assert.assertFalse;\
+\
+\cf2 public\cf0  \cf2 class\cf0  Test1 \{\
+ \cf2 private\cf0  \cf2 static\cf0  String \cf3 zipRegEx\cf0  = \cf4 "^\\\\d\{5\}([\\\\-]\\\\d\{4\})?$"\cf0 ;\
+ \cf2 private\cf0  \cf2 static\cf0  Pattern \cf3 pattern\cf0 ;\
+\
+ \cf5 @Before\cf0 \
+ \cf2 public\cf0   \cf2 void\cf0  setUpBeforeClass() \cf2 throws\cf0  Exception \{\
+  \cf3 pattern\cf0  = Pattern.compile(\cf3 zipRegEx\cf0 );\
+  System.\cf3 out\cf0 .println(\cf4 "testme"\cf0 );\
+ \}\
+\
+ \cf5 @Test\cf0 \
+ \cf2 public\cf0  \cf2 void\cf0  verifyZipCodeNoMatch() \cf2 throws\cf0  Exception\{		\
+  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul \ulc3 pattern\cf0 \ulnone .matcher(\cf4 "2211"\cf0 );\
+  \cf2 boolean\cf0  \cf6 notValid\cf0  = \cf6 mtcher\cf0 .matches();		\
+  assertFalse(\cf4 "Pattern did validate zip code"\cf0 , \cf6 notValid\cf0 );\
+ \}\
+\
+ \cf5 @Test\cf0 (expected=IndexOutOfBoundsException.\cf2 class\cf0 )\
+ \cf2 public\cf0  \cf2 void\cf0  verifyZipCodeGroupException() \cf2 throws\cf0  Exception\{		\
+  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul \ulc3 pattern\cf0 \ulnone .matcher(\cf4 "22101-5051"\cf0 );\
+  \cf2 boolean\cf0  \cf6 \ul \ulc6 isValid\cf0 \ulnone  = \cf6 mtcher\cf0 .matches();			\
+  \cf6 mtcher\cf0 .group(2);		\
+ \}\
+\}\
+\
+For one time execution, you can see the following example, "testme" is printed only once.
+\f0\fs24 Since it is @BeforeClass, so it runs before the constructor is called, thus, the method has to be static.\
+\pard\pardeftab720\sl280\partightenfactor0
+\cf0 \
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs22 \cf2 import\cf0  java.util.regex.Matcher;\
+\cf2 import\cf0  java.util.regex.Pattern;\
+\cf2 import\cf0  \ul org.junit.Before\ulnone ;\
+\cf2 import\cf0  org.junit.BeforeClass;\
+\cf2 import\cf0  org.junit.Test;\
+\cf2 import\cf0  \cf2 static\cf0  \ul org.junit.Assert.assertTrue\ulnone ;\
+\cf2 import\cf0  \cf2 static\cf0  org.junit.Assert.assertFalse;\
+\
+\cf2 public\cf0  \cf2 class\cf0  Test2 \{\
+ \cf2 private\cf0  \cf2 static\cf0  String \cf3 zipRegEx\cf0  = \cf4 "^\\\\d\{5\}([\\\\-]\\\\d\{4\})?$"\cf0 ;\
+ \cf2 private\cf0  \cf2 static\cf0  Pattern \cf3 pattern\cf0 ;\
+\
+ \cf5 @BeforeClass\cf0 \
+ \cf2 public\cf0   \cf2 static\cf0  \cf2 void\cf0  setUpBeforeClass() \cf2 throws\cf0  Exception \{\
+  \cf3 pattern\cf0  = Pattern.compile(\cf3 zipRegEx\cf0 );\
+  System.\cf3 out\cf0 .println(\cf4 "testme"\cf0 );\
+ \}\
+\
+ \cf5 @Test\cf0 \
+ \cf2 public\cf0  \cf2 void\cf0  verifyZipCodeNoMatch() \cf2 throws\cf0  Exception\{		\
+  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul \ulc3 pattern\cf0 \ulnone .matcher(\cf4 "2211"\cf0 );\
+  \cf2 boolean\cf0  \cf6 notValid\cf0  = \cf6 mtcher\cf0 .matches();		\
+  assertFalse(\cf4 "Pattern did validate zip code"\cf0 , \cf6 notValid\cf0 );\
+ \}\
+\
+ \cf5 @Test\cf0 (expected=IndexOutOfBoundsException.\cf2 class\cf0 )\
+ \cf2 public\cf0  \cf2 void\cf0  verifyZipCodeGroupException() \cf2 throws\cf0  Exception\{		\
+  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul \ulc3 pattern\cf0 \ulnone .matcher(\cf4 "22101-5051"\cf0 );\
+  \cf2 boolean\cf0  \cf6 \ul \ulc6 isValid\cf0 \ulnone  = \cf6 mtcher\cf0 .matches();			\
+  \cf6 mtcher\cf0 .group(2);		\
+ \}\
+\}
+\f0\fs24 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf0 \
+1.6 Testing with new logic groups\
+The following will run a suite of test files in one shot.\
+\
+\pard\pardeftab720\sl240\partightenfactor0
+
+\f4\fs22 \cf7 \cb8 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 import org.junit.runner.RunWith;\
+import org.junit.runners.Suite;\
+import org.junit.runners.Suite.SuiteClasses;\
+\
+@RunWith(Suite.class)\
+@SuiteClasses(\{ParametricRegularExpressionTest.class,\
+      RegularExpressionTest.class,\
+      TimedRegularExpressionTest.class\})\
+public class JUnit4Suite \{\
+\
+\}\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 Chapter 2 TestNJ\
+\
+\
+Chapter 3 Mockito and PowerMockito\
+\
+Mocking is the term used in testing. Unusual mocking will be one thing to know.\
+\
+Good practice: TDD or BDD testability problems when design classes and avoid them.\
+If you use good practice you will not face unusual mocking.\
+\
+For extending legacy codebase, you need to low cohesive classes.\
+The examples there are some workarounds for unusual mocking using Mockito, \
+PowerMock mocking and TestNG.\
+\
+1. Mocking final class\
+\
+a. Refactoring considerations\
+change class to non-final and test it standard way.\
+\
+b. Usage of PowerMock\
+Don't use it unless you have to.\
+\
+The following is an example of both mockito and power mockito,\
+\
+ref: https://www.codeproject.com/Articles/806508/Using-PowerMockito-to-Mock-Final-and-Static-Method\
+\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2 \cf0 \expnd0\expndtw0\kerning0
+package org.song.example;\
+\
+public final class AFinalClass \{\
+    public final String echoString(String s) \{\
+        return s;\
+    \}\
+\}\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f1 \cf0 Hide \'a0 Copy Code\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2 \cf0 package org.song.example;\
+\
+public class AStaticClass \{\
+    public static final String echoString(String s) \{\
+        return s;\
+    \}\
+\}\
+\
+\
+package org.song.example;\
+    \
+import org.junit.Assert;\
+import org.junit.Test;\
+import org.junit.runner.RunWith;\
+import org.mockito.Mockito;\
+import org.powermock.api.mockito.PowerMockito;\
+import org.powermock.core.classloader.annotations.PrepareForTest;\
+import org.powermock.modules.junit4.PowerMockRunner;\
+    \
+@RunWith(PowerMockRunner.class)\
+@PrepareForTest(\{AFinalClass.class, AStaticClass.class\})\
+public class MockTest \{\
+    \
+    @Test\
+    public void mockFinalClassTest() \{\
+        AFinalClass tested = PowerMockito.mock(AFinalClass.class);\
+        \
+        final String testInput = "A test input";\
+        final String mockedResult = "Mocked final echo result - " + testInput;\
+        Mockito.when(tested.echoString(testInput)).thenReturn(mockedResult);\
+        \
+        // Assert the mocked result is returned from method call\
+        Assert.assertEquals(tested.echoString(testInput), mockedResult);\
+    \}\
+    \
+    @Test\
+    public void mockStaticClassTest() \{\
+        PowerMockito.mockStatic(AStaticClass.class);\
+        \
+        final String testInput = "A test input";\
+        final String mockedResult = "Mocked static echo result - " + testInput;\
+        Mockito.when(AStaticClass.echoString(testInput)).thenReturn(mockedResult);\
+        \
+        // Assert the mocked result is returned from method call\
+        Assert.assertEquals(AStaticClass.echoString(testInput), mockedResult);\
+    \}\
+\}\
+\
+\
+package org.song.example;\
+    \
+import org.mockito.Mockito;\
+import org.powermock.api.mockito.PowerMockito;\
+import org.powermock.core.classloader.annotations.PrepareForTest;\
+import org.powermock.modules.testng.PowerMockTestCase;\
+import org.testng.Assert;\
+import org.testng.annotations.Test;\
+    \
+    \
+@PrepareForTest(\{AFinalClass.class, AStaticClass.class\})\
+public class MockTest extends PowerMockTestCase \{\
+    \
+    @Test\
+    public void mockFinalClassTest() \{\
+        AFinalClass tested = PowerMockito.mock(AFinalClass.class);\
+        \
+        final String testInput = "A test input";\
+        final String mockedResult = "Mocked final echo result - " + testInput;\
+        Mockito.when(tested.echoString(testInput)).thenReturn(mockedResult);\
+        \
+        // Assert the mocked result is returned from method call\
+        Assert.assertEquals(tested.echoString(testInput), mockedResult);\
+    \}\
+    \
+    @Test\
+    public void mockStaticClassTest() \{\
+        PowerMockito.mockStatic(AStaticClass.class);\
+        \
+        final String testInput = "A test input";\
+        final String mockedResult = "Mocked static echo result - " + testInput;\
+        Mockito.when(AStaticClass.echoString(testInput)).thenReturn(mockedResult);\
+        \
+        // Assert the mocked result is returned from method call\
+        Assert.assertEquals(AStaticClass.echoString(testInput), mockedResult);\
+    \}\
+\}\
+\pard\tx720\pardeftab720\sl280\partightenfactor0
+
+\f1 \cf0 \
+pom.xml for junit,\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2 \cf0 <dependency>\
+    <groupId>junit</groupId>\
+    <artifactId>junit</artifactId>\
+    <version>4.11</version>\
+    <scope>test</scope>\
+</dependency>\
+\
+<dependency>\
+    <groupId>org.powermock</groupId>\
+    <artifactId>powermock-api-mockito</artifactId>\
+    <version>1.5.5</version>\
+    <scope>test</scope>\
+</dependency>\
+\
+<dependency>\
+    <groupId>org.powermock</groupId>\
+    <artifactId>powermock-module-junit4</artifactId>\
+    <version>1.5.5</version>\
+    <exclusions>\
+        <exclusion>\
+            <groupId>junit</groupId>\
+            <artifactId>junit</artifactId>\
+        </exclusion>\
+        <exclusion>\
+            <groupId>org.powermock</groupId>\
+            <artifactId>powermock-core</artifactId>\
+        </exclusion>\
+        <exclusion>\
+            <groupId>org.powermock</groupId>\
+            <artifactId>powermock-reflect</artifactId>\
+        </exclusion>\
+    </exclusions>\
+    <scope>test</scope>\
+</dependency>\
+\
+\
+The test file with junit, TestNG example is skipped from this example.\
+\
+\
+package org.song.example;\
+    \
+import org.junit.Assert;\
+import org.junit.Test;\
+import org.junit.runner.RunWith;\
+import org.mockito.Mockito;\
+import org.powermock.api.mockito.PowerMockito;\
+import org.powermock.core.classloader.annotations.PrepareForTest;\
+import org.powermock.modules.junit4.PowerMockRunner;\
+    \
+@RunWith(PowerMockRunner.class)\
+@PrepareForTest(\{AFinalClass.class, AStaticClass.class\})\
+public class MockTest \{\
+    \
+    @Test\
+    public void mockFinalClassTest() \{\
+        AFinalClass tested = PowerMockito.mock(AFinalClass.class);\
+        \
+        final String testInput = "A test input";\
+        final String mockedResult = "Mocked final echo result - " + testInput;\
+        Mockito.when(tested.echoString(testInput)).thenReturn(mockedResult);\
+        \
+        // Assert the mocked result is returned from method call\
+        Assert.assertEquals(tested.echoString(testInput), mockedResult);\
+    \}\
+    \
+    @Test\
+    public void mockStaticClassTest() \{\
+        PowerMockito.mockStatic(AStaticClass.class);\
+        \
+        final String testInput = "A test input";\
+        final String mockedResult = "Mocked static echo result - " + testInput;\
+        Mockito.when(AStaticClass.echoString(testInput)).thenReturn(mockedResult);\
+        \
+        // Assert the mocked result is returned from method call\
+        Assert.assertEquals(AStaticClass.echoString(testInput), mockedResult);\
+    \}\
+\}\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \
+\
+ref: \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://www.javacodegeeks.com/2014/02/mock-final-class.html"}}{\fldrslt \cf0 https://www.javacodegeeks.com/2014/02/mock-final-class.html}}\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://lkrnac.net/blog/2014/01/mock-private-method/#mock-private-method"}}{\fldrslt \cf0 https://lkrnac.net/blog/2014/01/mock-private-method/#mock-private-method}}\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "http://stackoverflow.com/questions/13139581/java-final-class-and-mocking"}}{\fldrslt \cf0 http://stackoverflow.com/questions/13139581/java-final-class-and-mocking}}\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "http://stackoverflow.com/questions/14292863/how-to-mock-a-final-class-with-mockito"}}{\fldrslt \cf0 http://stackoverflow.com/questions/14292863/how-to-mock-a-final-class-with-mockito}}\
+\
+\
+Chapter 4 Testing singleton pattern example \
+\
+ref: \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "http://www.javaworld.com/article/2073352/core-java/simply-singleton.html"}}{\fldrslt \cf0 http://www.javaworld.com/article/2073352/core-java/simply-singleton.html}}\
+\
+\
+\pard\pardeftab720\sl345\sa320\partightenfactor0
+
+\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+Example 1. The classic singleton\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3\b0\fs24 \cf10 \cb11 public\cf0  \cf10 class\cf0  \cf12 ClassicSingleton\cf0  \cf13 \{\cf0 \
+   \cf10 private\cf0  \cf10 static\cf0  \cf12 ClassicSingleton\cf0  instance \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
+   \cf10 protected\cf0  \cf12 ClassicSingleton\cf13 ()\cf0  \cf13 \{\cf0 \
+      \cf14 // Exists only to defeat instantiation.\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 public\cf0  \cf10 static\cf0  \cf12 ClassicSingleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
+      \cf10 if\cf13 (\cf0 instance \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
+         instance \cf13 =\cf0  \cf10 new\cf0  \cf12 ClassicSingleton\cf13 ();\cf0 \
+      \cf13 \}\cf0 \
+      \cf10 return\cf0  instance\cf13 ;\cf0 \
+   \cf13 \}\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
+public\cf0  \cf10 class\cf0  \cf12 SingletonInstantiator\cf0  \cf13 \{\cf0  \
+  \cf10 public\cf0  \cf12 SingletonInstantiator\cf13 ()\cf0  \cf13 \{\cf0  \
+   \cf12 ClassicSingleton\cf0  instance \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
+\cf12 ClassicSingleton\cf0  anotherInstance \cf13 =\cf0 \
+\cf10 new\cf0  \cf12 ClassicSingleton\cf13 ();\cf0 \
+       \cf13 ...\cf0  \
+  \cf13 \}\cf0  \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+A few facts.\
+1. The second part above is legal, the protected constructor is ok to be instantiated. protected can be called by all the subclasses and classes in the same package. Try to make the class final, and \
+use private constructor and compiler will apply performance optimization. Or \
+make your constructor protected but put your class in a separate package.\
+\
+2. It could have multiple singleton instances as different class loaders, they will have their own instance.\
+\
+3. 
+\f5\fs36 \cf15 \expnd0\expndtw0\kerning0
+Fourth, if 
+\f3\fs24 \cf16 ClassicSingleton
+\f5\fs36 \cf15  implements the 
+\f3\fs24 \cf16 java.io.Serializable
+\f5\fs36 \cf15 interface, the class's instances can be serialized and deserialized. However, if you serialize a singleton object and subsequently deserialize that object more than once, you will have multiple singleton instances.\
+
+\f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \
+4. It is not thread safe. 
+\f5\fs36 \cf15 \expnd0\expndtw0\kerning0
+If two threads\'97we'll call them Thread 1 and Thread 2\'97call 
+\f3\fs24 \cf16 ClassicSingleton.getInstance()
+\f5\fs36 \cf15  at the same time, two 
+\f3\fs24 \cf16 ClassicSingleton
+\f5\fs36 \cf15 instances can be created if Thread 1 is preempted just after it enters the 
+\f3\fs24 \cf16 if
+\f5\fs36 \cf15 block and control is subsequently given to Thread 2.
+\f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \
+\
+\
+ \
+5. Junit testing\
+\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
+import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
+\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 ;\cf0 \
+\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 TestCase\cf13 ;\cf0 \
+\cf10 public\cf0  \cf10 class\cf0  \cf12 SingletonTest\cf0  \cf10 extends\cf0  \cf12 TestCase\cf0  \cf13 \{\cf0 \
+   \cf10 private\cf0  \cf12 ClassicSingleton\cf0  sone \cf13 =\cf0  \cf10 null\cf13 ,\cf0  stwo \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
+   \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
+   \cf10 public\cf0  \cf12 SingletonTest\cf13 (\cf12 String\cf0  name\cf13 )\cf0  \cf13 \{\cf0 \
+      \cf10 super\cf13 (\cf0 name\cf13 );\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 public\cf0  \cf10 void\cf0  setUp\cf13 ()\cf0  \cf13 \{\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
+      sone \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  sone\cf13 );\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
+      stwo \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  stwo\cf13 );\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 public\cf0  \cf10 void\cf0  testUnique\cf13 ()\cf0  \cf13 \{\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "checking singletons for equality"\cf13 );\cf0 \
+      \cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf10 true\cf13 ,\cf0  sone \cf13 ==\cf0  stwo\cf13 );\cf0 \
+   \cf13 \}\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+6. Multithreading consideration\
+\
+\pard\pardeftab720\sl450\sa320\partightenfactor0
+
+\f5\fs28 \cf15 \expnd0\expndtw0\kerning0
+Example 1's 
+\f3\fs24 \cf16 ClassicSingleton.getInstance()
+\f5\fs28 \cf15  method is not thread-safe because of the following code:\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3\fs24 \cf18 \cb11 1\cf13 :\cf0  \cf10 if\cf13 (\cf0 instance \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
+\cf18 2\cf13 :\cf0     instance \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
+\cf18 3\cf13 :\cf0  \cf13 \}
+\fs22 \cf15 \
+\pard\pardeftab720\sl450\sa320\partightenfactor0
+
+\f5\fs28 \cf15 \cb1 If a thread is preempted at Line 2 before the assignment is made, the 
+\f3\fs24 \cf16 instance 
+\f5\fs28 \cf15 member variable will still be 
+\f3\fs24 \cf16 null
+\f5\fs28 \cf15 , and another thread can subsequently enter the 
+\f3\fs24 \cf16 if
+\f5\fs28 \cf15  block. In that case, two distinct singleton instances will be created. Unfortunately, that scenario rarely occurs and is therefore difficult to produce during testing. To illustrate this thread Russian roulette, I've forced the issue by reimplementing Example 1's class. Example 4 shows the revised singleton class:\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \kerning1\expnd0\expndtw0 A simulation of this problem is this,\
+\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
+import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
+\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 ;\cf0 \
+\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 TestCase\cf13 ;\cf0 \
+\cf10 public\cf0  \cf10 class\cf0  \cf12 SingletonTest\cf0  \cf10 extends\cf0  \cf12 TestCase\cf0  \cf13 \{\cf0 \
+   \cf10 private\cf0  \cf12 ClassicSingleton\cf0  sone \cf13 =\cf0  \cf10 null\cf13 ,\cf0  stwo \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
+   \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
+   \cf10 public\cf0  \cf12 SingletonTest\cf13 (\cf12 String\cf0  name\cf13 )\cf0  \cf13 \{\cf0 \
+      \cf10 super\cf13 (\cf0 name\cf13 );\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 public\cf0  \cf10 void\cf0  setUp\cf13 ()\cf0  \cf13 \{\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
+      sone \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  sone\cf13 );\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
+      stwo \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  stwo\cf13 );\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 public\cf0  \cf10 void\cf0  testUnique\cf13 ()\cf0  \cf13 \{\cf0 \
+      logger\cf13 .\cf0 info\cf13 (\cf17 "checking singletons for equality"\cf13 );\cf0 \
+      \cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf10 true\cf13 ,\cf0  sone \cf13 ==\cf0  stwo\cf13 );\cf0 \
+   \cf13 \}\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+run it it is fine in one thread.\
+\
+When we run with two threads,\
+\
+\pard\pardeftab720\sl345\sa320\partightenfactor0
+
+\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+Example 4. Stack the deck\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3\b0\fs24 \cf10 \cb11 import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
+\cf10 public\cf0  \cf10 class\cf0  \cf12 Singleton\cf0  \cf13 \{\cf0 \
+  \cf10 private\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  singleton \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
+  \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
+  \cf10 private\cf0  \cf10 static\cf0  \cf10 boolean\cf0  firstThread \cf13 =\cf0  \cf10 true\cf13 ;\cf0 \
+  \cf10 protected\cf0  \cf12 Singleton\cf13 ()\cf0  \cf13 \{\cf0 \
+    \cf14 // Exists only to defeat instantiation.\cf0 \
+  \cf13 \}\cf0 \
+  \cf10 public\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
+     \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
+        simulateRandomActivity\cf13 ();\cf0 \
+        singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
+     \cf13 \}\cf0 \
+     logger\cf13 .\cf0 info\cf13 (\cf17 "created singleton: "\cf0  \cf13 +\cf0  singleton\cf13 );\cf0 \
+     \cf10 return\cf0  singleton\cf13 ;\cf0 \
+  \cf13 \}\cf0 \
+  \cf10 private\cf0  \cf10 static\cf0  \cf10 void\cf0  simulateRandomActivity\cf13 ()\cf0  \cf13 \{\cf0 \
+     \cf10 try\cf0  \cf13 \{\cf0 \
+        \cf10 if\cf13 (\cf0 firstThread\cf13 )\cf0  \cf13 \{\cf0 \
+           firstThread \cf13 =\cf0  \cf10 false\cf13 ;\cf0 \
+           logger\cf13 .\cf0 info\cf13 (\cf17 "sleeping..."\cf13 );\cf0 \
+           \cf14 // This nap should give the second thread enough time\cf0 \
+           \cf14 // to get by the first thread.\cf0 \
+             \cf12 Thread\cf13 .\cf0 currentThread\cf13 ().\cf0 sleep\cf13 (\cf18 50\cf13 );\cf0 \
+       \cf13 \}\cf0 \
+     \cf13 \}\cf0 \
+     \cf10 catch\cf13 (\cf12 InterruptedException\cf0  ex\cf13 )\cf0  \cf13 \{\cf0 \
+        logger\cf13 .\cf0 warn\cf13 (\cf17 "Sleep interrupted"\cf13 );\cf0 \
+     \cf13 \}\cf0 \
+  \cf13 \}\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+\pard\pardeftab720\sl345\sa320\partightenfactor0
+
+\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+Example 5. A test that fails\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3\b0\fs24 \cf10 \cb11 import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
+\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 ;\cf0 \
+\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 TestCase\cf13 ;\cf0 \
+\cf10 public\cf0  \cf10 class\cf0  \cf12 SingletonTest\cf0  \cf10 extends\cf0  \cf12 TestCase\cf0  \cf13 \{\cf0 \
+   \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
+   \cf10 private\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  singleton \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
+   \cf10 public\cf0  \cf12 SingletonTest\cf13 (\cf12 String\cf0  name\cf13 )\cf0  \cf13 \{\cf0 \
+      \cf10 super\cf13 (\cf0 name\cf13 );\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 public\cf0  \cf10 void\cf0  setUp\cf13 ()\cf0  \cf13 \{\cf0 \
+      singleton \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 public\cf0  \cf10 void\cf0  testUnique\cf13 ()\cf0  \cf10 throws\cf0  \cf12 InterruptedException\cf0  \cf13 \{\cf0 \
+      \cf14 // Both threads call Singleton.getInstance().\cf0 \
+      \cf12 Thread\cf0  threadOne \cf13 =\cf0  \cf10 new\cf0  \cf12 Thread\cf13 (\cf10 new\cf0  \cf12 SingletonTestRunnable\cf13 ()),\cf0 \
+             threadTwo \cf13 =\cf0  \cf10 new\cf0  \cf12 Thread\cf13 (\cf10 new\cf0  \cf12 SingletonTestRunnable\cf13 ());\cf0 \
+      threadOne\cf13 .\cf0 start\cf13 ();\cf0 \
+      threadTwo\cf13 .\cf0 start\cf13 ();\cf0 \
+      threadOne\cf13 .\cf0 join\cf13 ();\cf0 \
+      threadTwo\cf13 .\cf0 join\cf13 ();\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 private\cf0  \cf10 static\cf0  \cf10 class\cf0  \cf12 SingletonTestRunnable\cf0  \cf10 implements\cf0  \cf12 Runnable\cf0  \cf13 \{\cf0 \
+      \cf10 public\cf0  \cf10 void\cf0  run\cf13 ()\cf0  \cf13 \{\cf0 \
+         \cf14 // Get a reference to the singleton.\cf0 \
+         \cf12 Singleton\cf0  s \cf13 =\cf0  \cf12 Singleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
+         \cf14 // Protect singleton member variable from\cf0 \
+         \cf14 // multithreaded access.\cf0 \
+         \cf10 synchronized\cf13 (\cf12 SingletonTest\cf13 .\cf10 class\cf13 )\cf0  \cf13 \{\cf0 \
+            \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf14 // If local reference is null...\cf0 \
+               singleton \cf13 =\cf0  s\cf13 ;\cf0      \cf14 // ...set it to the singleton\cf0 \
+         \cf13 \}\cf0 \
+         \cf14 // Local reference must be equal to the one and\cf0 \
+         \cf14 // only instance of Singleton; otherwise, we have two\cf0 \
+                  \cf14 // Singleton instances.\cf0 \
+         \cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf10 true\cf13 ,\cf0  s \cf13 ==\cf0  singleton\cf13 );\cf0 \
+      \cf13 \}\cf0 \
+   \cf13 \}\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+\pard\pardeftab720\sl345\sa320\partightenfactor0
+
+\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+Example 6. Example 5's output\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3\b0\fs24 \cf12 \cb11 Buildfile\cf13 :\cf0  build\cf13 .\cf0 xml\
+init\cf13 :\cf0 \
+     \cf13 [\cf0 echo\cf13 ]\cf0  \cf12 Build\cf0  \cf18 20030414\cf0  \cf13 (\cf18 14\cf13 -\cf18 04\cf13 -\cf18 2003\cf0  \cf18 03\cf13 :\cf18 06\cf13 )\cf0 \
+compile\cf13 :\cf0 \
+run\cf13 -\cf0 test\cf13 -\cf0 text\cf13 :\cf0 \
+INFO \cf12 Thread\cf13 -\cf18 1\cf13 :\cf0  sleeping\cf13 ...\cf0 \
+INFO \cf12 Thread\cf13 -\cf18 2\cf13 :\cf0  created singleton\cf13 :\cf0  \cf12 Singleton@7e5cbd\cf0 \
+INFO \cf12 Thread\cf13 -\cf18 1\cf13 :\cf0  created singleton\cf13 :\cf0  \cf12 Singleton@704ebb\cf0 \
+junit\cf13 .\cf0 framework\cf13 .\cf12 AssertionFailedError\cf13 :\cf0  expected\cf13 :<\cf10 true\cf13 >\cf0  but was\cf13 :<\cf10 false\cf13 >\cf0 \
+   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 fail\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 47\cf13 )\cf0 \
+   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 failNotEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 282\cf13 )\cf0 \
+   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 64\cf13 )\cf0 \
+   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 149\cf13 )\cf0 \
+   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 155\cf13 )\cf0 \
+   at \cf12 SingletonTest$SingletonTestRunnable\cf13 .\cf0 run\cf13 (\cf12 Unknown\cf0  \cf12 Source\cf13 )\cf0 \
+   at java\cf13 .\cf0 lang\cf13 .\cf12 Thread\cf13 .\cf0 run\cf13 (\cf12 Thread\cf13 .\cf0 java\cf13 :\cf18 554\cf13 )\cf0 \
+     \cf13 [\cf0 java\cf13 ]\cf0  \cf13 .\cf0 \
+     \cf13 [\cf0 java\cf13 ]\cf0  \cf12 Time\cf13 :\cf0  \cf18 0.577\cf0 \
+     \cf13 [\cf0 java\cf13 ]\cf0  OK \cf13 (\cf18 1\cf0  test\cf13 )
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+An ok way, of the following,\
+\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
+public\cf0  \cf10 synchronized\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
+   \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
+      simulateRandomActivity\cf13 ();\cf0 \
+      singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
+   \cf13 \}\cf0 \
+   logger\cf13 .\cf0 info\cf13 (\cf17 "created singleton: "\cf0  \cf13 +\cf0  singleton\cf13 );\cf0 \
+   \cf10 return\cf0  singleton\cf13 ;\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\
+synchronized the method, however, synchronization is very slow,100 times slower than non-synchronized.\
+\
+A performance improvement,\
+\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
+public\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
+   \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
+      \cf10 synchronized\cf13 (\cf12 Singleton\cf13 .\cf10 class\cf13 )\cf0  \cf13 \{\cf0  \
+         singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
+      \cf13 \}\cf0 \
+   \cf13 \}\cf0 \
+   \cf10 return\cf0  singleton\cf13 ;\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+synchronized a block of code inside of the method seem to fix the problem but it is not.\
+Since there is a if block, and synchronized block is inside, so if some thread preempted, \
+\pard\pardeftab720\sl460\partightenfactor0
+
+\f5\fs36 \cf15 \expnd0\expndtw0\kerning0
+Thread 1 enters the synchronized block, and, before it can assign the 
+\f3\fs24 \cf16 singleton
+\f5\fs36 \cf15  member variable, the thread is preempted. Subsequently, another thread can enter the 
+\f3\fs24 \cf16 if
+\f5\fs36 \cf15  block. The second thread will wait for the first thread to finish, but we will still wind up with two distinct singleton instances. \
+\
+Double-checked locking seemingly is better,\
+\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f3\fs24 \cf10 \cb11 public\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
+  \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
+     \cf10 synchronized\cf13 (\cf12 Singleton\cf13 .\cf10 class\cf13 )\cf0  \cf13 \{\cf0 \
+       \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
+         singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
+       \cf13 \}\cf0 \
+    \cf13 \}\cf0 \
+  \cf13 \}\cf0 \
+  \cf10 return\cf0  singleton\cf13 ;\cf0 \
+\cf13 \}
+\fs22 \cf15 \
+\pard\pardeftab720\sl460\partightenfactor0
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+\pard\pardeftab720\sl450\sa320\partightenfactor0
+
+\f5\fs28 \cf15 \expnd0\expndtw0\kerning0
+What happens if two threads simultaneously access 
+\f3\fs24 \cf16 getInstance()
+\f5\fs28 \cf15 ? Imagine Thread 1 enters the synchronized block and is preempted. Subsequently, a second thread enters the 
+\f3\fs24 \cf16 if
+\f5\fs28 \cf15  block. When Thread 1 exits the synchronized block, Thread 2 makes a second check to see if the 
+\f3\fs24 \cf16 singleton
+\f5\fs28 \cf15  instance is still 
+\f3\fs24 \cf16 null
+\f5\fs28 \cf15 . Since Thread 1 set the 
+\f3\fs24 \cf16 singleton
+\f5\fs28 \cf15  member variable, Thread 2's second check will fail, and a second singleton will not be created. Or so it seems.\
+Unfortunately, double-checked locking is not guaranteed to work because the compiler is free to assign a value to the 
+\f3\fs24 \cf16 singleton
+\f5\fs28 \cf15  member variable before the singleton's constructor is called. If that happens, Thread 1 can be preempted after the singleton reference has been assigned, but before the singleton is initialized, so Thread 2 can return a reference to an uninitialized singleton instance.\
+\pard\pardeftab720\sl460\partightenfactor0
+
+\fs36 \cf15 Since double-checked locking is not guaranteed to work, you must synchronize the entire 
+\f3\fs24 \cf16 getInstance()
+\f5\fs36 \cf15  method. However, another alternative is simple, fast, and thread-safe.\
+\
+\pard\pardeftab720\sl460\partightenfactor0
+
+\fs28 \cf15 \
+\pard\pardeftab720\sl450\sa320\partightenfactor0
+\cf15 \
+}
