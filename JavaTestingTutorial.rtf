@@ -1,11 +1,12 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf470
 {\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;\f2\fmodern\fcharset0 Courier;
-\f3\fnil\fcharset0 Monaco;\f4\fnil\fcharset0 AndaleMono;\f5\fnil\fcharset204 PTSans-Regular;
-}
+\f3\fnil\fcharset0 Monaco;\f4\fnil\fcharset0 HelveticaNeue;\f5\fswiss\fcharset0 ArialMT;
+\f6\fnil\fcharset0 AndaleMono;\f7\fnil\fcharset204 PTSans-Regular;}
 {\colortbl;\red255\green255\blue255;\red127\green0\blue85;\red0\green0\blue192;\red42\green0\blue255;
-\red100\green100\blue100;\red106\green62\blue62;\red0\green0\blue0;\red245\green245\blue245;\red38\green38\blue38;
-\red0\green0\blue117;\red223\green223\blue223;\red82\green0\blue83;\red83\green85\blue2;\red115\green0\blue2;
-\red17\green17\blue22;\red103\green14\blue8;\red16\green121\blue2;\red11\green84\blue83;}
+\red100\green100\blue100;\red106\green62\blue62;\red0\green0\blue0;\red255\green255\blue255;\red26\green26\blue26;
+\red245\green245\blue245;\red245\green245\blue245;\red38\green38\blue38;\red0\green0\blue117;\red223\green223\blue223;
+\red82\green0\blue83;\red83\green85\blue2;\red115\green0\blue2;\red17\green17\blue22;\red103\green14\blue8;
+\red16\green121\blue2;\red11\green84\blue83;}
 \margl1440\margr1440\vieww10800\viewh8400\viewkind0
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
@@ -166,7 +167,7 @@ For example, the following will print out "testme" twice,  so if you have anythi
 \
  \cf5 @Test\cf0 (expected=IndexOutOfBoundsException.\cf2 class\cf0 )\
  \cf2 public\cf0  \cf2 void\cf0  verifyZipCodeGroupException() \cf2 throws\cf0  Exception\{		\
-  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul \ulc3 pattern\cf0 \ulnone .matcher(\cf4 "22101-5051"\cf0 );\
+  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul pattern\cf0 \ulnone .matcher(\cf4 "22101-5051"\cf0 );\
   \cf2 boolean\cf0  \cf6 \ul \ulc6 isValid\cf0 \ulnone  = \cf6 mtcher\cf0 .matches();			\
   \cf6 mtcher\cf0 .group(2);		\
  \}\
@@ -205,7 +206,7 @@ For one time execution, you can see the following example, "testme" is printed o
 \
  \cf5 @Test\cf0 (expected=IndexOutOfBoundsException.\cf2 class\cf0 )\
  \cf2 public\cf0  \cf2 void\cf0  verifyZipCodeGroupException() \cf2 throws\cf0  Exception\{		\
-  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul \ulc3 pattern\cf0 \ulnone .matcher(\cf4 "22101-5051"\cf0 );\
+  Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul pattern\cf0 \ulnone .matcher(\cf4 "22101-5051"\cf0 );\
   \cf2 boolean\cf0  \cf6 \ul \ulc6 isValid\cf0 \ulnone  = \cf6 mtcher\cf0 .matches();			\
   \cf6 mtcher\cf0 .group(2);		\
  \}\
@@ -213,13 +214,76 @@ For one time execution, you can see the following example, "testme" is printed o
 \f0\fs24 \
 \pard\pardeftab720\sl280\partightenfactor0
 \cf0 \
-1.6 Testing with new logic groups\
+\
+1.6 
+\f4 \cf7 \cb8 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 Parametric testing
+\b\fs38 \
+\pard\pardeftab720\sl340\partightenfactor0
+
+\f5\b0\fs30 \cf9 \strokec9 \
+JUnit 4 introduces an excellent new feature that lets you create generic tests that can be fed by parametric values. As a result, you can create a single test case and run it multiple times -- once for every parameter you've created.\
+
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
+\pard\pardeftab720\partightenfactor0
+
+\f3\fs22 \cf2 import\cf0  \cf2 static\cf0  org.junit.Assert.*;\
+\cf2 import\cf0  \ul java.util.ArrayList\ulnone ;\
+\cf2 import\cf0  java.util.Arrays;\
+\cf2 import\cf0  java.util.Collection;\
+\cf2 import\cf0  java.util.regex.Matcher;\
+\cf2 import\cf0  java.util.regex.Pattern;\
+\cf2 import\cf0  org.junit.BeforeClass;\
+\cf2 import\cf0  org.junit.Test;\
+\cf2 import\cf0  org.junit.runner.RunWith;\
+\cf2 import\cf0  org.junit.runners.Parameterized;\
+\cf2 import\cf0  org.junit.runners.Parameterized.Parameters;\
+\
+\cf5 @RunWith\cf0 (Parameterized.\cf2 class\cf0 )\
+\cf2 public\cf0  \cf2 class\cf0  ParametricRegularExpressionTest \{\
+	\cf2 private\cf0  \cf2 static\cf0  String \cf3 zipRegEx\cf0  = \cf4 "^\\\\d\{5\}([\\\\-]\\\\d\{4\})?$"\cf0 ;\
+	\cf2 private\cf0  \cf2 static\cf0  Pattern \cf3 pattern\cf0 ;\
+	\cf2 private\cf0  String \cf3 phrase\cf0 ;\
+	\cf2 private\cf0  \cf2 boolean\cf0  \cf3 match\cf0 ;\
+\
+	\cf5 @BeforeClass\cf0 \
+	\cf2 public\cf0  \cf2 static\cf0  \cf2 void\cf0  setUpBeforeClass() \cf2 throws\cf0  Exception \{\
+	  \cf3 pattern\cf0  = Pattern.compile(\cf3 zipRegEx\cf0 );\
+	\}\
+\
+	\cf2 public\cf0  ParametricRegularExpressionTest(String \cf6 phrase\cf0 , \cf2 boolean\cf0  \cf6 match\cf0 ) \{\
+		\cf2 this\cf0 .\cf3 phrase\cf0  = \cf6 phrase\cf0 ;\
+		\cf2 this\cf0 .\cf3 match\cf0  = \cf6 match\cf0 ;\
+	\}\
+\
+	\cf5 @Parameters\cf0 \
+	\cf2 public\cf0  \cf2 static\cf0  \ul Collection\ulnone  regExValues() \{\
+		\cf2 return\cf0  Arrays.asList(\cf2 new\cf0  Object[][] \{ \
+			    \{ \cf4 "22101"\cf0 , \cf2 true\cf0 \}, \
+			    \{ \cf4 "221x1"\cf0 , \cf2 false\cf0 \}, \
+			    \{ \cf4 "22101-5150"\cf0 , \cf2 true\cf0 \},\
+				\{ \cf4 "221015150"\cf0 , \cf2 false\cf0 \} \
+			 \});\
+	\}\
+\
+	\cf5 @Test\cf0 \
+	\cf2 public\cf0  \cf2 void\cf0  verifyGoodZipCode() \cf2 throws\cf0  Exception\{		\
+	 Matcher \cf6 mtcher\cf0  = \cf2 this\cf0 .\cf3 \ul \ulc3 pattern\cf0 \ulnone .matcher(\cf3 phrase\cf0 );\
+	 \cf2 boolean\cf0  \cf6 isValid\cf0  = \cf6 mtcher\cf0 .matches();		\
+	 assertEquals(\cf4 "Pattern did not validate zip code"\cf0 , \cf6 isValid\cf0 , \cf3 match\cf0 );\
+	\}\
+\}\
+
+\f0\fs24 \
+\pard\pardeftab720\sl280\partightenfactor0
+\cf0 \
+1.7 Testing with new logic groups\
 The following will run a suite of test files in one shot.\
 \
 \pard\pardeftab720\sl240\partightenfactor0
 
-\f4\fs22 \cf7 \cb8 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec7 import org.junit.runner.RunWith;\
+\f6\fs22 \cf0 \cb10 \expnd0\expndtw0\kerning0
+import org.junit.runner.RunWith;\
 import org.junit.runners.Suite;\
 import org.junit.runners.Suite.SuiteClasses;\
 \
@@ -232,8 +296,61 @@ public class JUnit4Suite \{\
 \}\
 \pard\pardeftab720\sl280\partightenfactor0
 
+\f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
+1.8 Run junit4 with ant\
+\
+Here is a simple Junit,\
+\
+\pard\pardeftab720\sl240\partightenfactor0
+
+\f6\fs22 \cf7 \cb11 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 import java.util.regex.Matcher;\
+import java.util.regex.Pattern;\
+\
+import org.junit.BeforeClass;\
+import org.junit.Test;\
+import static org.junit.Assert.assertTrue;\
+\
+public class RegularExpressionTest \{\
+ private static String zipRegEx = "^\\\\d\{5\}([\\\\-]\\\\d\{4\})?$";\
+ private static Pattern pattern;\
+\
+ @BeforeClass\
+ public static void setUpBeforeClass() throws Exception \{\
+  pattern = Pattern.compile(zipRegEx);\
+ \}\
+\
+ @Test\
+ public void verifyGoodZipCode() throws Exception\{		\
+  Matcher mtcher = this.pattern.matcher("22101");\
+  boolean isValid = mtcher.matches();		\
+  assertTrue("Pattern did not validate zip code", isValid);\
+ \}\
+\}\
+\pard\pardeftab720\sl280\partightenfactor0
+
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
 \
+ref: http://tutorials.jenkov.com/java-unit-testing/running-tests-with-ant.html\
+\
+\
+\
+1.9 Run junit4 with maven\
+\
+A maven project will run the test very easily, simply,\
+\
+mvn test\
+\
+\
+To build your project without tests, you can do the following,\
+\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2 \cf7 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec7 mvn install -Dmaven.test.skip=true    \
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0 \cf0 \kerning1\expnd0\expndtw0 \outl0\strokewidth0 \
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 \cf0 Chapter 2 TestNJ\
@@ -259,9 +376,6 @@ b. Usage of PowerMock\
 Don't use it unless you have to.\
 \
 The following is an example of both mockito and power mockito,\
-\
-ref: https://www.codeproject.com/Articles/806508/Using-PowerMockito-to-Mock-Final-and-Static-Method\
-\
 \
 \pard\pardeftab720\sl280\partightenfactor0
 
@@ -453,6 +567,12 @@ public class MockTest \{\
 \f0 \cf0 \kerning1\expnd0\expndtw0 \
 \
 ref: \
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+ref: https://www.codeproject.com/Articles/806508/Using-PowerMockito-to-Mock-Final-and-Static-Method\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 {\field{\*\fldinst{HYPERLINK "https://www.javacodegeeks.com/2014/02/mock-final-class.html"}}{\fldrslt \cf0 https://www.javacodegeeks.com/2014/02/mock-final-class.html}}\
 \
@@ -475,39 +595,39 @@ ref: \
 \
 \pard\pardeftab720\sl345\sa320\partightenfactor0
 
-\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+\f7\b\fs30 \cf12 \expnd0\expndtw0\kerning0
 Example 1. The classic singleton\
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3\b0\fs24 \cf10 \cb11 public\cf0  \cf10 class\cf0  \cf12 ClassicSingleton\cf0  \cf13 \{\cf0 \
-   \cf10 private\cf0  \cf10 static\cf0  \cf12 ClassicSingleton\cf0  instance \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
-   \cf10 protected\cf0  \cf12 ClassicSingleton\cf13 ()\cf0  \cf13 \{\cf0 \
-      \cf14 // Exists only to defeat instantiation.\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 public\cf0  \cf10 static\cf0  \cf12 ClassicSingleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
-      \cf10 if\cf13 (\cf0 instance \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
-         instance \cf13 =\cf0  \cf10 new\cf0  \cf12 ClassicSingleton\cf13 ();\cf0 \
-      \cf13 \}\cf0 \
-      \cf10 return\cf0  instance\cf13 ;\cf0 \
-   \cf13 \}\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3\b0\fs24 \cf13 \cb14 public\cf0  \cf13 class\cf0  \cf15 ClassicSingleton\cf0  \cf16 \{\cf0 \
+   \cf13 private\cf0  \cf13 static\cf0  \cf15 ClassicSingleton\cf0  instance \cf16 =\cf0  \cf13 null\cf16 ;\cf0 \
+   \cf13 protected\cf0  \cf15 ClassicSingleton\cf16 ()\cf0  \cf16 \{\cf0 \
+      \cf17 // Exists only to defeat instantiation.\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 public\cf0  \cf13 static\cf0  \cf15 ClassicSingleton\cf0  getInstance\cf16 ()\cf0  \cf16 \{\cf0 \
+      \cf13 if\cf16 (\cf0 instance \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf16 \{\cf0 \
+         instance \cf16 =\cf0  \cf13 new\cf0  \cf15 ClassicSingleton\cf16 ();\cf0 \
+      \cf16 \}\cf0 \
+      \cf13 return\cf0  instance\cf16 ;\cf0 \
+   \cf16 \}\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
 \
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
-public\cf0  \cf10 class\cf0  \cf12 SingletonInstantiator\cf0  \cf13 \{\cf0  \
-  \cf10 public\cf0  \cf12 SingletonInstantiator\cf13 ()\cf0  \cf13 \{\cf0  \
-   \cf12 ClassicSingleton\cf0  instance \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
-\cf12 ClassicSingleton\cf0  anotherInstance \cf13 =\cf0 \
-\cf10 new\cf0  \cf12 ClassicSingleton\cf13 ();\cf0 \
-       \cf13 ...\cf0  \
-  \cf13 \}\cf0  \
-\cf13 \}
-\fs22 \cf15 \
+\f3 \cf13 \cb14 \expnd0\expndtw0\kerning0
+public\cf0  \cf13 class\cf0  \cf15 SingletonInstantiator\cf0  \cf16 \{\cf0  \
+  \cf13 public\cf0  \cf15 SingletonInstantiator\cf16 ()\cf0  \cf16 \{\cf0  \
+   \cf15 ClassicSingleton\cf0  instance \cf16 =\cf0  \cf15 ClassicSingleton\cf16 .\cf0 getInstance\cf16 ();\cf0 \
+\cf15 ClassicSingleton\cf0  anotherInstance \cf16 =\cf0 \
+\cf13 new\cf0  \cf15 ClassicSingleton\cf16 ();\cf0 \
+       \cf16 ...\cf0  \
+  \cf16 \}\cf0  \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
@@ -520,23 +640,23 @@ make your constructor protected but put your class in a separate package.\
 2. It could have multiple singleton instances as different class loaders, they will have their own instance.\
 \
 3. 
-\f5\fs36 \cf15 \expnd0\expndtw0\kerning0
+\f7\fs36 \cf18 \expnd0\expndtw0\kerning0
 Fourth, if 
-\f3\fs24 \cf16 ClassicSingleton
-\f5\fs36 \cf15  implements the 
-\f3\fs24 \cf16 java.io.Serializable
-\f5\fs36 \cf15 interface, the class's instances can be serialized and deserialized. However, if you serialize a singleton object and subsequently deserialize that object more than once, you will have multiple singleton instances.\
+\f3\fs24 \cf19 ClassicSingleton
+\f7\fs36 \cf18  implements the 
+\f3\fs24 \cf19 java.io.Serializable
+\f7\fs36 \cf18 interface, the class's instances can be serialized and deserialized. However, if you serialize a singleton object and subsequently deserialize that object more than once, you will have multiple singleton instances.\
 
 \f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \
 4. It is not thread safe. 
-\f5\fs36 \cf15 \expnd0\expndtw0\kerning0
+\f7\fs36 \cf18 \expnd0\expndtw0\kerning0
 If two threads\'97we'll call them Thread 1 and Thread 2\'97call 
-\f3\fs24 \cf16 ClassicSingleton.getInstance()
-\f5\fs36 \cf15  at the same time, two 
-\f3\fs24 \cf16 ClassicSingleton
-\f5\fs36 \cf15 instances can be created if Thread 1 is preempted just after it enters the 
-\f3\fs24 \cf16 if
-\f5\fs36 \cf15 block and control is subsequently given to Thread 2.
+\f3\fs24 \cf19 ClassicSingleton.getInstance()
+\f7\fs36 \cf18  at the same time, two 
+\f3\fs24 \cf19 ClassicSingleton
+\f7\fs36 \cf18 instances can be created if Thread 1 is preempted just after it enters the 
+\f3\fs24 \cf19 if
+\f7\fs36 \cf18 block and control is subsequently given to Thread 2.
 \f0\fs24 \cf0 \kerning1\expnd0\expndtw0 \
 \
 \
@@ -545,30 +665,30 @@ If two threads\'97we'll call them Thread 1 and Thread 2\'97call
 \
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
-import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
-\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 ;\cf0 \
-\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 TestCase\cf13 ;\cf0 \
-\cf10 public\cf0  \cf10 class\cf0  \cf12 SingletonTest\cf0  \cf10 extends\cf0  \cf12 TestCase\cf0  \cf13 \{\cf0 \
-   \cf10 private\cf0  \cf12 ClassicSingleton\cf0  sone \cf13 =\cf0  \cf10 null\cf13 ,\cf0  stwo \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
-   \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
-   \cf10 public\cf0  \cf12 SingletonTest\cf13 (\cf12 String\cf0  name\cf13 )\cf0  \cf13 \{\cf0 \
-      \cf10 super\cf13 (\cf0 name\cf13 );\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 public\cf0  \cf10 void\cf0  setUp\cf13 ()\cf0  \cf13 \{\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
-      sone \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  sone\cf13 );\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
-      stwo \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  stwo\cf13 );\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 public\cf0  \cf10 void\cf0  testUnique\cf13 ()\cf0  \cf13 \{\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "checking singletons for equality"\cf13 );\cf0 \
-      \cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf10 true\cf13 ,\cf0  sone \cf13 ==\cf0  stwo\cf13 );\cf0 \
-   \cf13 \}\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3 \cf13 \cb14 \expnd0\expndtw0\kerning0
+import\cf0  org\cf16 .\cf0 apache\cf16 .\cf0 log4j\cf16 .\cf15 Logger\cf16 ;\cf0 \
+\cf13 import\cf0  junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 ;\cf0 \
+\cf13 import\cf0  junit\cf16 .\cf0 framework\cf16 .\cf15 TestCase\cf16 ;\cf0 \
+\cf13 public\cf0  \cf13 class\cf0  \cf15 SingletonTest\cf0  \cf13 extends\cf0  \cf15 TestCase\cf0  \cf16 \{\cf0 \
+   \cf13 private\cf0  \cf15 ClassicSingleton\cf0  sone \cf16 =\cf0  \cf13 null\cf16 ,\cf0  stwo \cf16 =\cf0  \cf13 null\cf16 ;\cf0 \
+   \cf13 private\cf0  \cf13 static\cf0  \cf15 Logger\cf0  logger \cf16 =\cf0  \cf15 Logger\cf16 .\cf0 getRootLogger\cf16 ();\cf0 \
+   \cf13 public\cf0  \cf15 SingletonTest\cf16 (\cf15 String\cf0  name\cf16 )\cf0  \cf16 \{\cf0 \
+      \cf13 super\cf16 (\cf0 name\cf16 );\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 public\cf0  \cf13 void\cf0  setUp\cf16 ()\cf0  \cf16 \{\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "getting singleton..."\cf16 );\cf0 \
+      sone \cf16 =\cf0  \cf15 ClassicSingleton\cf16 .\cf0 getInstance\cf16 ();\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "...got singleton: "\cf0  \cf16 +\cf0  sone\cf16 );\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "getting singleton..."\cf16 );\cf0 \
+      stwo \cf16 =\cf0  \cf15 ClassicSingleton\cf16 .\cf0 getInstance\cf16 ();\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "...got singleton: "\cf0  \cf16 +\cf0  stwo\cf16 );\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 public\cf0  \cf13 void\cf0  testUnique\cf16 ()\cf0  \cf16 \{\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "checking singletons for equality"\cf16 );\cf0 \
+      \cf15 Assert\cf16 .\cf0 assertEquals\cf16 (\cf13 true\cf16 ,\cf0  sone \cf16 ==\cf0  stwo\cf16 );\cf0 \
+   \cf16 \}\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
@@ -576,55 +696,55 @@ import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0
 \
 \pard\pardeftab720\sl450\sa320\partightenfactor0
 
-\f5\fs28 \cf15 \expnd0\expndtw0\kerning0
+\f7\fs28 \cf18 \expnd0\expndtw0\kerning0
 Example 1's 
-\f3\fs24 \cf16 ClassicSingleton.getInstance()
-\f5\fs28 \cf15  method is not thread-safe because of the following code:\
+\f3\fs24 \cf19 ClassicSingleton.getInstance()
+\f7\fs28 \cf18  method is not thread-safe because of the following code:\
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3\fs24 \cf18 \cb11 1\cf13 :\cf0  \cf10 if\cf13 (\cf0 instance \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
-\cf18 2\cf13 :\cf0     instance \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
-\cf18 3\cf13 :\cf0  \cf13 \}
-\fs22 \cf15 \
+\f3\fs24 \cf21 \cb14 1\cf16 :\cf0  \cf13 if\cf16 (\cf0 instance \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf16 \{\cf0 \
+\cf21 2\cf16 :\cf0     instance \cf16 =\cf0  \cf13 new\cf0  \cf15 Singleton\cf16 ();\cf0 \
+\cf21 3\cf16 :\cf0  \cf16 \}
+\fs22 \cf18 \
 \pard\pardeftab720\sl450\sa320\partightenfactor0
 
-\f5\fs28 \cf15 \cb1 If a thread is preempted at Line 2 before the assignment is made, the 
-\f3\fs24 \cf16 instance 
-\f5\fs28 \cf15 member variable will still be 
-\f3\fs24 \cf16 null
-\f5\fs28 \cf15 , and another thread can subsequently enter the 
-\f3\fs24 \cf16 if
-\f5\fs28 \cf15  block. In that case, two distinct singleton instances will be created. Unfortunately, that scenario rarely occurs and is therefore difficult to produce during testing. To illustrate this thread Russian roulette, I've forced the issue by reimplementing Example 1's class. Example 4 shows the revised singleton class:\
+\f7\fs28 \cf18 \cb1 If a thread is preempted at Line 2 before the assignment is made, the 
+\f3\fs24 \cf19 instance 
+\f7\fs28 \cf18 member variable will still be 
+\f3\fs24 \cf19 null
+\f7\fs28 \cf18 , and another thread can subsequently enter the 
+\f3\fs24 \cf19 if
+\f7\fs28 \cf18  block. In that case, two distinct singleton instances will be created. Unfortunately, that scenario rarely occurs and is therefore difficult to produce during testing. To illustrate this thread Russian roulette, I've forced the issue by reimplementing Example 1's class. Example 4 shows the revised singleton class:\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \kerning1\expnd0\expndtw0 A simulation of this problem is this,\
 \
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
-import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
-\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 ;\cf0 \
-\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 TestCase\cf13 ;\cf0 \
-\cf10 public\cf0  \cf10 class\cf0  \cf12 SingletonTest\cf0  \cf10 extends\cf0  \cf12 TestCase\cf0  \cf13 \{\cf0 \
-   \cf10 private\cf0  \cf12 ClassicSingleton\cf0  sone \cf13 =\cf0  \cf10 null\cf13 ,\cf0  stwo \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
-   \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
-   \cf10 public\cf0  \cf12 SingletonTest\cf13 (\cf12 String\cf0  name\cf13 )\cf0  \cf13 \{\cf0 \
-      \cf10 super\cf13 (\cf0 name\cf13 );\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 public\cf0  \cf10 void\cf0  setUp\cf13 ()\cf0  \cf13 \{\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
-      sone \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  sone\cf13 );\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "getting singleton..."\cf13 );\cf0 \
-      stwo \cf13 =\cf0  \cf12 ClassicSingleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "...got singleton: "\cf0  \cf13 +\cf0  stwo\cf13 );\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 public\cf0  \cf10 void\cf0  testUnique\cf13 ()\cf0  \cf13 \{\cf0 \
-      logger\cf13 .\cf0 info\cf13 (\cf17 "checking singletons for equality"\cf13 );\cf0 \
-      \cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf10 true\cf13 ,\cf0  sone \cf13 ==\cf0  stwo\cf13 );\cf0 \
-   \cf13 \}\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3 \cf13 \cb14 \expnd0\expndtw0\kerning0
+import\cf0  org\cf16 .\cf0 apache\cf16 .\cf0 log4j\cf16 .\cf15 Logger\cf16 ;\cf0 \
+\cf13 import\cf0  junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 ;\cf0 \
+\cf13 import\cf0  junit\cf16 .\cf0 framework\cf16 .\cf15 TestCase\cf16 ;\cf0 \
+\cf13 public\cf0  \cf13 class\cf0  \cf15 SingletonTest\cf0  \cf13 extends\cf0  \cf15 TestCase\cf0  \cf16 \{\cf0 \
+   \cf13 private\cf0  \cf15 ClassicSingleton\cf0  sone \cf16 =\cf0  \cf13 null\cf16 ,\cf0  stwo \cf16 =\cf0  \cf13 null\cf16 ;\cf0 \
+   \cf13 private\cf0  \cf13 static\cf0  \cf15 Logger\cf0  logger \cf16 =\cf0  \cf15 Logger\cf16 .\cf0 getRootLogger\cf16 ();\cf0 \
+   \cf13 public\cf0  \cf15 SingletonTest\cf16 (\cf15 String\cf0  name\cf16 )\cf0  \cf16 \{\cf0 \
+      \cf13 super\cf16 (\cf0 name\cf16 );\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 public\cf0  \cf13 void\cf0  setUp\cf16 ()\cf0  \cf16 \{\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "getting singleton..."\cf16 );\cf0 \
+      sone \cf16 =\cf0  \cf15 ClassicSingleton\cf16 .\cf0 getInstance\cf16 ();\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "...got singleton: "\cf0  \cf16 +\cf0  sone\cf16 );\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "getting singleton..."\cf16 );\cf0 \
+      stwo \cf16 =\cf0  \cf15 ClassicSingleton\cf16 .\cf0 getInstance\cf16 ();\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "...got singleton: "\cf0  \cf16 +\cf0  stwo\cf16 );\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 public\cf0  \cf13 void\cf0  testUnique\cf16 ()\cf0  \cf16 \{\cf0 \
+      logger\cf16 .\cf0 info\cf16 (\cf20 "checking singletons for equality"\cf16 );\cf0 \
+      \cf15 Assert\cf16 .\cf0 assertEquals\cf16 (\cf13 true\cf16 ,\cf0  sone \cf16 ==\cf0  stwo\cf16 );\cf0 \
+   \cf16 \}\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
@@ -634,121 +754,121 @@ When we run with two threads,\
 \
 \pard\pardeftab720\sl345\sa320\partightenfactor0
 
-\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+\f7\b\fs30 \cf12 \expnd0\expndtw0\kerning0
 Example 4. Stack the deck\
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3\b0\fs24 \cf10 \cb11 import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
-\cf10 public\cf0  \cf10 class\cf0  \cf12 Singleton\cf0  \cf13 \{\cf0 \
-  \cf10 private\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  singleton \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
-  \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
-  \cf10 private\cf0  \cf10 static\cf0  \cf10 boolean\cf0  firstThread \cf13 =\cf0  \cf10 true\cf13 ;\cf0 \
-  \cf10 protected\cf0  \cf12 Singleton\cf13 ()\cf0  \cf13 \{\cf0 \
-    \cf14 // Exists only to defeat instantiation.\cf0 \
-  \cf13 \}\cf0 \
-  \cf10 public\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
-     \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
-        simulateRandomActivity\cf13 ();\cf0 \
-        singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
-     \cf13 \}\cf0 \
-     logger\cf13 .\cf0 info\cf13 (\cf17 "created singleton: "\cf0  \cf13 +\cf0  singleton\cf13 );\cf0 \
-     \cf10 return\cf0  singleton\cf13 ;\cf0 \
-  \cf13 \}\cf0 \
-  \cf10 private\cf0  \cf10 static\cf0  \cf10 void\cf0  simulateRandomActivity\cf13 ()\cf0  \cf13 \{\cf0 \
-     \cf10 try\cf0  \cf13 \{\cf0 \
-        \cf10 if\cf13 (\cf0 firstThread\cf13 )\cf0  \cf13 \{\cf0 \
-           firstThread \cf13 =\cf0  \cf10 false\cf13 ;\cf0 \
-           logger\cf13 .\cf0 info\cf13 (\cf17 "sleeping..."\cf13 );\cf0 \
-           \cf14 // This nap should give the second thread enough time\cf0 \
-           \cf14 // to get by the first thread.\cf0 \
-             \cf12 Thread\cf13 .\cf0 currentThread\cf13 ().\cf0 sleep\cf13 (\cf18 50\cf13 );\cf0 \
-       \cf13 \}\cf0 \
-     \cf13 \}\cf0 \
-     \cf10 catch\cf13 (\cf12 InterruptedException\cf0  ex\cf13 )\cf0  \cf13 \{\cf0 \
-        logger\cf13 .\cf0 warn\cf13 (\cf17 "Sleep interrupted"\cf13 );\cf0 \
-     \cf13 \}\cf0 \
-  \cf13 \}\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3\b0\fs24 \cf13 \cb14 import\cf0  org\cf16 .\cf0 apache\cf16 .\cf0 log4j\cf16 .\cf15 Logger\cf16 ;\cf0 \
+\cf13 public\cf0  \cf13 class\cf0  \cf15 Singleton\cf0  \cf16 \{\cf0 \
+  \cf13 private\cf0  \cf13 static\cf0  \cf15 Singleton\cf0  singleton \cf16 =\cf0  \cf13 null\cf16 ;\cf0 \
+  \cf13 private\cf0  \cf13 static\cf0  \cf15 Logger\cf0  logger \cf16 =\cf0  \cf15 Logger\cf16 .\cf0 getRootLogger\cf16 ();\cf0 \
+  \cf13 private\cf0  \cf13 static\cf0  \cf13 boolean\cf0  firstThread \cf16 =\cf0  \cf13 true\cf16 ;\cf0 \
+  \cf13 protected\cf0  \cf15 Singleton\cf16 ()\cf0  \cf16 \{\cf0 \
+    \cf17 // Exists only to defeat instantiation.\cf0 \
+  \cf16 \}\cf0 \
+  \cf13 public\cf0  \cf13 static\cf0  \cf15 Singleton\cf0  getInstance\cf16 ()\cf0  \cf16 \{\cf0 \
+     \cf13 if\cf16 (\cf0 singleton \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf16 \{\cf0 \
+        simulateRandomActivity\cf16 ();\cf0 \
+        singleton \cf16 =\cf0  \cf13 new\cf0  \cf15 Singleton\cf16 ();\cf0 \
+     \cf16 \}\cf0 \
+     logger\cf16 .\cf0 info\cf16 (\cf20 "created singleton: "\cf0  \cf16 +\cf0  singleton\cf16 );\cf0 \
+     \cf13 return\cf0  singleton\cf16 ;\cf0 \
+  \cf16 \}\cf0 \
+  \cf13 private\cf0  \cf13 static\cf0  \cf13 void\cf0  simulateRandomActivity\cf16 ()\cf0  \cf16 \{\cf0 \
+     \cf13 try\cf0  \cf16 \{\cf0 \
+        \cf13 if\cf16 (\cf0 firstThread\cf16 )\cf0  \cf16 \{\cf0 \
+           firstThread \cf16 =\cf0  \cf13 false\cf16 ;\cf0 \
+           logger\cf16 .\cf0 info\cf16 (\cf20 "sleeping..."\cf16 );\cf0 \
+           \cf17 // This nap should give the second thread enough time\cf0 \
+           \cf17 // to get by the first thread.\cf0 \
+             \cf15 Thread\cf16 .\cf0 currentThread\cf16 ().\cf0 sleep\cf16 (\cf21 50\cf16 );\cf0 \
+       \cf16 \}\cf0 \
+     \cf16 \}\cf0 \
+     \cf13 catch\cf16 (\cf15 InterruptedException\cf0  ex\cf16 )\cf0  \cf16 \{\cf0 \
+        logger\cf16 .\cf0 warn\cf16 (\cf20 "Sleep interrupted"\cf16 );\cf0 \
+     \cf16 \}\cf0 \
+  \cf16 \}\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
 \
 \pard\pardeftab720\sl345\sa320\partightenfactor0
 
-\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+\f7\b\fs30 \cf12 \expnd0\expndtw0\kerning0
 Example 5. A test that fails\
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3\b0\fs24 \cf10 \cb11 import\cf0  org\cf13 .\cf0 apache\cf13 .\cf0 log4j\cf13 .\cf12 Logger\cf13 ;\cf0 \
-\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 ;\cf0 \
-\cf10 import\cf0  junit\cf13 .\cf0 framework\cf13 .\cf12 TestCase\cf13 ;\cf0 \
-\cf10 public\cf0  \cf10 class\cf0  \cf12 SingletonTest\cf0  \cf10 extends\cf0  \cf12 TestCase\cf0  \cf13 \{\cf0 \
-   \cf10 private\cf0  \cf10 static\cf0  \cf12 Logger\cf0  logger \cf13 =\cf0  \cf12 Logger\cf13 .\cf0 getRootLogger\cf13 ();\cf0 \
-   \cf10 private\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  singleton \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
-   \cf10 public\cf0  \cf12 SingletonTest\cf13 (\cf12 String\cf0  name\cf13 )\cf0  \cf13 \{\cf0 \
-      \cf10 super\cf13 (\cf0 name\cf13 );\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 public\cf0  \cf10 void\cf0  setUp\cf13 ()\cf0  \cf13 \{\cf0 \
-      singleton \cf13 =\cf0  \cf10 null\cf13 ;\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 public\cf0  \cf10 void\cf0  testUnique\cf13 ()\cf0  \cf10 throws\cf0  \cf12 InterruptedException\cf0  \cf13 \{\cf0 \
-      \cf14 // Both threads call Singleton.getInstance().\cf0 \
-      \cf12 Thread\cf0  threadOne \cf13 =\cf0  \cf10 new\cf0  \cf12 Thread\cf13 (\cf10 new\cf0  \cf12 SingletonTestRunnable\cf13 ()),\cf0 \
-             threadTwo \cf13 =\cf0  \cf10 new\cf0  \cf12 Thread\cf13 (\cf10 new\cf0  \cf12 SingletonTestRunnable\cf13 ());\cf0 \
-      threadOne\cf13 .\cf0 start\cf13 ();\cf0 \
-      threadTwo\cf13 .\cf0 start\cf13 ();\cf0 \
-      threadOne\cf13 .\cf0 join\cf13 ();\cf0 \
-      threadTwo\cf13 .\cf0 join\cf13 ();\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 private\cf0  \cf10 static\cf0  \cf10 class\cf0  \cf12 SingletonTestRunnable\cf0  \cf10 implements\cf0  \cf12 Runnable\cf0  \cf13 \{\cf0 \
-      \cf10 public\cf0  \cf10 void\cf0  run\cf13 ()\cf0  \cf13 \{\cf0 \
-         \cf14 // Get a reference to the singleton.\cf0 \
-         \cf12 Singleton\cf0  s \cf13 =\cf0  \cf12 Singleton\cf13 .\cf0 getInstance\cf13 ();\cf0 \
-         \cf14 // Protect singleton member variable from\cf0 \
-         \cf14 // multithreaded access.\cf0 \
-         \cf10 synchronized\cf13 (\cf12 SingletonTest\cf13 .\cf10 class\cf13 )\cf0  \cf13 \{\cf0 \
-            \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf14 // If local reference is null...\cf0 \
-               singleton \cf13 =\cf0  s\cf13 ;\cf0      \cf14 // ...set it to the singleton\cf0 \
-         \cf13 \}\cf0 \
-         \cf14 // Local reference must be equal to the one and\cf0 \
-         \cf14 // only instance of Singleton; otherwise, we have two\cf0 \
-                  \cf14 // Singleton instances.\cf0 \
-         \cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf10 true\cf13 ,\cf0  s \cf13 ==\cf0  singleton\cf13 );\cf0 \
-      \cf13 \}\cf0 \
-   \cf13 \}\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3\b0\fs24 \cf13 \cb14 import\cf0  org\cf16 .\cf0 apache\cf16 .\cf0 log4j\cf16 .\cf15 Logger\cf16 ;\cf0 \
+\cf13 import\cf0  junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 ;\cf0 \
+\cf13 import\cf0  junit\cf16 .\cf0 framework\cf16 .\cf15 TestCase\cf16 ;\cf0 \
+\cf13 public\cf0  \cf13 class\cf0  \cf15 SingletonTest\cf0  \cf13 extends\cf0  \cf15 TestCase\cf0  \cf16 \{\cf0 \
+   \cf13 private\cf0  \cf13 static\cf0  \cf15 Logger\cf0  logger \cf16 =\cf0  \cf15 Logger\cf16 .\cf0 getRootLogger\cf16 ();\cf0 \
+   \cf13 private\cf0  \cf13 static\cf0  \cf15 Singleton\cf0  singleton \cf16 =\cf0  \cf13 null\cf16 ;\cf0 \
+   \cf13 public\cf0  \cf15 SingletonTest\cf16 (\cf15 String\cf0  name\cf16 )\cf0  \cf16 \{\cf0 \
+      \cf13 super\cf16 (\cf0 name\cf16 );\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 public\cf0  \cf13 void\cf0  setUp\cf16 ()\cf0  \cf16 \{\cf0 \
+      singleton \cf16 =\cf0  \cf13 null\cf16 ;\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 public\cf0  \cf13 void\cf0  testUnique\cf16 ()\cf0  \cf13 throws\cf0  \cf15 InterruptedException\cf0  \cf16 \{\cf0 \
+      \cf17 // Both threads call Singleton.getInstance().\cf0 \
+      \cf15 Thread\cf0  threadOne \cf16 =\cf0  \cf13 new\cf0  \cf15 Thread\cf16 (\cf13 new\cf0  \cf15 SingletonTestRunnable\cf16 ()),\cf0 \
+             threadTwo \cf16 =\cf0  \cf13 new\cf0  \cf15 Thread\cf16 (\cf13 new\cf0  \cf15 SingletonTestRunnable\cf16 ());\cf0 \
+      threadOne\cf16 .\cf0 start\cf16 ();\cf0 \
+      threadTwo\cf16 .\cf0 start\cf16 ();\cf0 \
+      threadOne\cf16 .\cf0 join\cf16 ();\cf0 \
+      threadTwo\cf16 .\cf0 join\cf16 ();\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 private\cf0  \cf13 static\cf0  \cf13 class\cf0  \cf15 SingletonTestRunnable\cf0  \cf13 implements\cf0  \cf15 Runnable\cf0  \cf16 \{\cf0 \
+      \cf13 public\cf0  \cf13 void\cf0  run\cf16 ()\cf0  \cf16 \{\cf0 \
+         \cf17 // Get a reference to the singleton.\cf0 \
+         \cf15 Singleton\cf0  s \cf16 =\cf0  \cf15 Singleton\cf16 .\cf0 getInstance\cf16 ();\cf0 \
+         \cf17 // Protect singleton member variable from\cf0 \
+         \cf17 // multithreaded access.\cf0 \
+         \cf13 synchronized\cf16 (\cf15 SingletonTest\cf16 .\cf13 class\cf16 )\cf0  \cf16 \{\cf0 \
+            \cf13 if\cf16 (\cf0 singleton \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf17 // If local reference is null...\cf0 \
+               singleton \cf16 =\cf0  s\cf16 ;\cf0      \cf17 // ...set it to the singleton\cf0 \
+         \cf16 \}\cf0 \
+         \cf17 // Local reference must be equal to the one and\cf0 \
+         \cf17 // only instance of Singleton; otherwise, we have two\cf0 \
+                  \cf17 // Singleton instances.\cf0 \
+         \cf15 Assert\cf16 .\cf0 assertEquals\cf16 (\cf13 true\cf16 ,\cf0  s \cf16 ==\cf0  singleton\cf16 );\cf0 \
+      \cf16 \}\cf0 \
+   \cf16 \}\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
 \
 \pard\pardeftab720\sl345\sa320\partightenfactor0
 
-\f5\b\fs30 \cf9 \expnd0\expndtw0\kerning0
+\f7\b\fs30 \cf12 \expnd0\expndtw0\kerning0
 Example 6. Example 5's output\
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3\b0\fs24 \cf12 \cb11 Buildfile\cf13 :\cf0  build\cf13 .\cf0 xml\
-init\cf13 :\cf0 \
-     \cf13 [\cf0 echo\cf13 ]\cf0  \cf12 Build\cf0  \cf18 20030414\cf0  \cf13 (\cf18 14\cf13 -\cf18 04\cf13 -\cf18 2003\cf0  \cf18 03\cf13 :\cf18 06\cf13 )\cf0 \
-compile\cf13 :\cf0 \
-run\cf13 -\cf0 test\cf13 -\cf0 text\cf13 :\cf0 \
-INFO \cf12 Thread\cf13 -\cf18 1\cf13 :\cf0  sleeping\cf13 ...\cf0 \
-INFO \cf12 Thread\cf13 -\cf18 2\cf13 :\cf0  created singleton\cf13 :\cf0  \cf12 Singleton@7e5cbd\cf0 \
-INFO \cf12 Thread\cf13 -\cf18 1\cf13 :\cf0  created singleton\cf13 :\cf0  \cf12 Singleton@704ebb\cf0 \
-junit\cf13 .\cf0 framework\cf13 .\cf12 AssertionFailedError\cf13 :\cf0  expected\cf13 :<\cf10 true\cf13 >\cf0  but was\cf13 :<\cf10 false\cf13 >\cf0 \
-   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 fail\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 47\cf13 )\cf0 \
-   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 failNotEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 282\cf13 )\cf0 \
-   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 64\cf13 )\cf0 \
-   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 149\cf13 )\cf0 \
-   at junit\cf13 .\cf0 framework\cf13 .\cf12 Assert\cf13 .\cf0 assertEquals\cf13 (\cf12 Assert\cf13 .\cf0 java\cf13 :\cf18 155\cf13 )\cf0 \
-   at \cf12 SingletonTest$SingletonTestRunnable\cf13 .\cf0 run\cf13 (\cf12 Unknown\cf0  \cf12 Source\cf13 )\cf0 \
-   at java\cf13 .\cf0 lang\cf13 .\cf12 Thread\cf13 .\cf0 run\cf13 (\cf12 Thread\cf13 .\cf0 java\cf13 :\cf18 554\cf13 )\cf0 \
-     \cf13 [\cf0 java\cf13 ]\cf0  \cf13 .\cf0 \
-     \cf13 [\cf0 java\cf13 ]\cf0  \cf12 Time\cf13 :\cf0  \cf18 0.577\cf0 \
-     \cf13 [\cf0 java\cf13 ]\cf0  OK \cf13 (\cf18 1\cf0  test\cf13 )
-\fs22 \cf15 \
+\f3\b0\fs24 \cf15 \cb14 Buildfile\cf16 :\cf0  build\cf16 .\cf0 xml\
+init\cf16 :\cf0 \
+     \cf16 [\cf0 echo\cf16 ]\cf0  \cf15 Build\cf0  \cf21 20030414\cf0  \cf16 (\cf21 14\cf16 -\cf21 04\cf16 -\cf21 2003\cf0  \cf21 03\cf16 :\cf21 06\cf16 )\cf0 \
+compile\cf16 :\cf0 \
+run\cf16 -\cf0 test\cf16 -\cf0 text\cf16 :\cf0 \
+INFO \cf15 Thread\cf16 -\cf21 1\cf16 :\cf0  sleeping\cf16 ...\cf0 \
+INFO \cf15 Thread\cf16 -\cf21 2\cf16 :\cf0  created singleton\cf16 :\cf0  \cf15 Singleton@7e5cbd\cf0 \
+INFO \cf15 Thread\cf16 -\cf21 1\cf16 :\cf0  created singleton\cf16 :\cf0  \cf15 Singleton@704ebb\cf0 \
+junit\cf16 .\cf0 framework\cf16 .\cf15 AssertionFailedError\cf16 :\cf0  expected\cf16 :<\cf13 true\cf16 >\cf0  but was\cf16 :<\cf13 false\cf16 >\cf0 \
+   at junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 .\cf0 fail\cf16 (\cf15 Assert\cf16 .\cf0 java\cf16 :\cf21 47\cf16 )\cf0 \
+   at junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 .\cf0 failNotEquals\cf16 (\cf15 Assert\cf16 .\cf0 java\cf16 :\cf21 282\cf16 )\cf0 \
+   at junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 .\cf0 assertEquals\cf16 (\cf15 Assert\cf16 .\cf0 java\cf16 :\cf21 64\cf16 )\cf0 \
+   at junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 .\cf0 assertEquals\cf16 (\cf15 Assert\cf16 .\cf0 java\cf16 :\cf21 149\cf16 )\cf0 \
+   at junit\cf16 .\cf0 framework\cf16 .\cf15 Assert\cf16 .\cf0 assertEquals\cf16 (\cf15 Assert\cf16 .\cf0 java\cf16 :\cf21 155\cf16 )\cf0 \
+   at \cf15 SingletonTest$SingletonTestRunnable\cf16 .\cf0 run\cf16 (\cf15 Unknown\cf0  \cf15 Source\cf16 )\cf0 \
+   at java\cf16 .\cf0 lang\cf16 .\cf15 Thread\cf16 .\cf0 run\cf16 (\cf15 Thread\cf16 .\cf0 java\cf16 :\cf21 554\cf16 )\cf0 \
+     \cf16 [\cf0 java\cf16 ]\cf0  \cf16 .\cf0 \
+     \cf16 [\cf0 java\cf16 ]\cf0  \cf15 Time\cf16 :\cf0  \cf21 0.577\cf0 \
+     \cf16 [\cf0 java\cf16 ]\cf0  OK \cf16 (\cf21 1\cf0  test\cf16 )
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
@@ -757,16 +877,16 @@ An ok way, of the following,\
 \
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
-public\cf0  \cf10 synchronized\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
-   \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
-      simulateRandomActivity\cf13 ();\cf0 \
-      singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
-   \cf13 \}\cf0 \
-   logger\cf13 .\cf0 info\cf13 (\cf17 "created singleton: "\cf0  \cf13 +\cf0  singleton\cf13 );\cf0 \
-   \cf10 return\cf0  singleton\cf13 ;\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3 \cf13 \cb14 \expnd0\expndtw0\kerning0
+public\cf0  \cf13 synchronized\cf0  \cf13 static\cf0  \cf15 Singleton\cf0  getInstance\cf16 ()\cf0  \cf16 \{\cf0 \
+   \cf13 if\cf16 (\cf0 singleton \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf16 \{\cf0 \
+      simulateRandomActivity\cf16 ();\cf0 \
+      singleton \cf16 =\cf0  \cf13 new\cf0  \cf15 Singleton\cf16 ();\cf0 \
+   \cf16 \}\cf0 \
+   logger\cf16 .\cf0 info\cf16 (\cf20 "created singleton: "\cf0  \cf16 +\cf0  singleton\cf16 );\cf0 \
+   \cf13 return\cf0  singleton\cf16 ;\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
@@ -777,16 +897,16 @@ A performance improvement,\
 \
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3 \cf10 \cb11 \expnd0\expndtw0\kerning0
-public\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
-   \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
-      \cf10 synchronized\cf13 (\cf12 Singleton\cf13 .\cf10 class\cf13 )\cf0  \cf13 \{\cf0  \
-         singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
-      \cf13 \}\cf0 \
-   \cf13 \}\cf0 \
-   \cf10 return\cf0  singleton\cf13 ;\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3 \cf13 \cb14 \expnd0\expndtw0\kerning0
+public\cf0  \cf13 static\cf0  \cf15 Singleton\cf0  getInstance\cf16 ()\cf0  \cf16 \{\cf0 \
+   \cf13 if\cf16 (\cf0 singleton \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf16 \{\cf0 \
+      \cf13 synchronized\cf16 (\cf15 Singleton\cf16 .\cf13 class\cf16 )\cf0  \cf16 \{\cf0  \
+         singleton \cf16 =\cf0  \cf13 new\cf0  \cf15 Singleton\cf16 ();\cf0 \
+      \cf16 \}\cf0 \
+   \cf16 \}\cf0 \
+   \cf13 return\cf0  singleton\cf16 ;\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
@@ -794,57 +914,57 @@ synchronized a block of code inside of the method seem to fix the problem but it
 Since there is a if block, and synchronized block is inside, so if some thread preempted, \
 \pard\pardeftab720\sl460\partightenfactor0
 
-\f5\fs36 \cf15 \expnd0\expndtw0\kerning0
+\f7\fs36 \cf18 \expnd0\expndtw0\kerning0
 Thread 1 enters the synchronized block, and, before it can assign the 
-\f3\fs24 \cf16 singleton
-\f5\fs36 \cf15  member variable, the thread is preempted. Subsequently, another thread can enter the 
-\f3\fs24 \cf16 if
-\f5\fs36 \cf15  block. The second thread will wait for the first thread to finish, but we will still wind up with two distinct singleton instances. \
+\f3\fs24 \cf19 singleton
+\f7\fs36 \cf18  member variable, the thread is preempted. Subsequently, another thread can enter the 
+\f3\fs24 \cf19 if
+\f7\fs36 \cf18  block. The second thread will wait for the first thread to finish, but we will still wind up with two distinct singleton instances. \
 \
 Double-checked locking seemingly is better,\
 \
 \pard\pardeftab720\sl360\partightenfactor0
 
-\f3\fs24 \cf10 \cb11 public\cf0  \cf10 static\cf0  \cf12 Singleton\cf0  getInstance\cf13 ()\cf0  \cf13 \{\cf0 \
-  \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
-     \cf10 synchronized\cf13 (\cf12 Singleton\cf13 .\cf10 class\cf13 )\cf0  \cf13 \{\cf0 \
-       \cf10 if\cf13 (\cf0 singleton \cf13 ==\cf0  \cf10 null\cf13 )\cf0  \cf13 \{\cf0 \
-         singleton \cf13 =\cf0  \cf10 new\cf0  \cf12 Singleton\cf13 ();\cf0 \
-       \cf13 \}\cf0 \
-    \cf13 \}\cf0 \
-  \cf13 \}\cf0 \
-  \cf10 return\cf0  singleton\cf13 ;\cf0 \
-\cf13 \}
-\fs22 \cf15 \
+\f3\fs24 \cf13 \cb14 public\cf0  \cf13 static\cf0  \cf15 Singleton\cf0  getInstance\cf16 ()\cf0  \cf16 \{\cf0 \
+  \cf13 if\cf16 (\cf0 singleton \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf16 \{\cf0 \
+     \cf13 synchronized\cf16 (\cf15 Singleton\cf16 .\cf13 class\cf16 )\cf0  \cf16 \{\cf0 \
+       \cf13 if\cf16 (\cf0 singleton \cf16 ==\cf0  \cf13 null\cf16 )\cf0  \cf16 \{\cf0 \
+         singleton \cf16 =\cf0  \cf13 new\cf0  \cf15 Singleton\cf16 ();\cf0 \
+       \cf16 \}\cf0 \
+    \cf16 \}\cf0 \
+  \cf16 \}\cf0 \
+  \cf13 return\cf0  singleton\cf16 ;\cf0 \
+\cf16 \}
+\fs22 \cf18 \
 \pard\pardeftab720\sl460\partightenfactor0
 
 \f0\fs24 \cf0 \cb1 \kerning1\expnd0\expndtw0 \
 \pard\pardeftab720\sl450\sa320\partightenfactor0
 
-\f5\fs28 \cf15 \expnd0\expndtw0\kerning0
+\f7\fs28 \cf18 \expnd0\expndtw0\kerning0
 What happens if two threads simultaneously access 
-\f3\fs24 \cf16 getInstance()
-\f5\fs28 \cf15 ? Imagine Thread 1 enters the synchronized block and is preempted. Subsequently, a second thread enters the 
-\f3\fs24 \cf16 if
-\f5\fs28 \cf15  block. When Thread 1 exits the synchronized block, Thread 2 makes a second check to see if the 
-\f3\fs24 \cf16 singleton
-\f5\fs28 \cf15  instance is still 
-\f3\fs24 \cf16 null
-\f5\fs28 \cf15 . Since Thread 1 set the 
-\f3\fs24 \cf16 singleton
-\f5\fs28 \cf15  member variable, Thread 2's second check will fail, and a second singleton will not be created. Or so it seems.\
+\f3\fs24 \cf19 getInstance()
+\f7\fs28 \cf18 ? Imagine Thread 1 enters the synchronized block and is preempted. Subsequently, a second thread enters the 
+\f3\fs24 \cf19 if
+\f7\fs28 \cf18  block. When Thread 1 exits the synchronized block, Thread 2 makes a second check to see if the 
+\f3\fs24 \cf19 singleton
+\f7\fs28 \cf18  instance is still 
+\f3\fs24 \cf19 null
+\f7\fs28 \cf18 . Since Thread 1 set the 
+\f3\fs24 \cf19 singleton
+\f7\fs28 \cf18  member variable, Thread 2's second check will fail, and a second singleton will not be created. Or so it seems.\
 Unfortunately, double-checked locking is not guaranteed to work because the compiler is free to assign a value to the 
-\f3\fs24 \cf16 singleton
-\f5\fs28 \cf15  member variable before the singleton's constructor is called. If that happens, Thread 1 can be preempted after the singleton reference has been assigned, but before the singleton is initialized, so Thread 2 can return a reference to an uninitialized singleton instance.\
+\f3\fs24 \cf19 singleton
+\f7\fs28 \cf18  member variable before the singleton's constructor is called. If that happens, Thread 1 can be preempted after the singleton reference has been assigned, but before the singleton is initialized, so Thread 2 can return a reference to an uninitialized singleton instance.\
 \pard\pardeftab720\sl460\partightenfactor0
 
-\fs36 \cf15 Since double-checked locking is not guaranteed to work, you must synchronize the entire 
-\f3\fs24 \cf16 getInstance()
-\f5\fs36 \cf15  method. However, another alternative is simple, fast, and thread-safe.\
+\fs36 \cf18 Since double-checked locking is not guaranteed to work, you must synchronize the entire 
+\f3\fs24 \cf19 getInstance()
+\f7\fs36 \cf18  method. However, another alternative is simple, fast, and thread-safe.\
 \
 \pard\pardeftab720\sl460\partightenfactor0
 
-\fs28 \cf15 \
+\fs28 \cf18 \
 \pard\pardeftab720\sl450\sa320\partightenfactor0
-\cf15 \
+\cf18 \
 }
