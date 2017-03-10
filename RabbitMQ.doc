@@ -1,0 +1,273 @@
+RabbitMQ Tutorial
+
+1. What is?
+1/ Another Pivotal software
+2/ Messaging for applications, open source and commercial.
+3/ Support many os and different language portability
+
+2. Installation
+Need to install a RabbitMQ server.
+I am using mac, so I only privide mac installation,
+
+1/ brew update
+2/ brew install rabbitmq
+3/Run RabbitMQ Server
+The RabbitMQ server scripts are installed into /usr/local/sbin. This is not automatically added to your path, so you may wish to add
+PATH=$PATH:/usr/local/sbin to your .bash_profile or .profile. The server can then be started with rabbitmq-server.
+
+4/ Configure system limits 
+RabbitMQ installations running production workloads may need system limits and kernel parameters tuning in order to handle a decent 
+number of concurrent connections and queues. The main setting that needs adjustment is the max number of open files, also known as ulimit -n. 
+The default value on many operating systems is too low for a messaging broker (eg. 1024 on several Linux distributions). We recommend allowing 
+for at least 65536 file descriptors for user rabbitmq in production environments. 4096 should be sufficient for most development workloads.
+
+There are two limits in play: the maximum number of open files the OS kernel allows (kern.maxfilesperproc) and the per-user limit (ulimit -n). The former must be higher than the latter.
+
+To adjust the per-user limit for RabbitMQ, there are several options:
+
+Invoke ulimit -S -n 4096 before starting RabbitMQ in foreground.
+
+
+5/ Verify system limits
+rabbitmqctl status
+
+includes the same value.
+
+The following command
+
+launchctl limit
+
+for example,
+
+iaofengmaclap:sbin xiaofeng$ rabbitmqctl status
+Status of node rabbit@localhost ...
+[{pid,5370},
+ {running_applications,
+     [{rabbitmq_management_visualiser,"RabbitMQ Visualiser","3.6.6"},
+      {rabbitmq_management,"RabbitMQ Management Console","3.6.6"},
+      {rabbitmq_web_dispatch,"RabbitMQ Web Dispatcher","3.6.6"},
+      {webmachine,"webmachine","1.10.3"},
+      {mochiweb,"MochiMedia Web Server","2.13.1"},
+      {inets,"INETS  CXC 138 49","6.3.4"},
+      {rabbitmq_stomp,"RabbitMQ STOMP plugin","3.6.6"},
+      {rabbitmq_amqp1_0,"AMQP 1.0 support for RabbitMQ","3.6.6"},
+      {rabbitmq_management_agent,"RabbitMQ Management Agent","3.6.6"},
+      {rabbitmq_mqtt,"RabbitMQ MQTT Adapter","3.6.6"},
+      {rabbit,"RabbitMQ","3.6.6"},
+      {mnesia,"MNESIA  CXC 138 12","4.14.2"},
+      {compiler,"ERTS  CXC 138 10","7.0.3"},
+      {os_mon,"CPO  CXC 138 46","2.4.1"},
+      {sasl,"SASL  CXC 138 11","3.0.2"},
+      {ranch,"Socket acceptor pool for TCP protocols.","1.2.1"},
+      {amqp_client,"RabbitMQ AMQP Client","3.6.6"},
+      {rabbit_common,[],"3.6.6"},
+      {xmerl,"XML parser","1.3.12"},
+      {ssl,"Erlang/OTP SSL application","8.1"},
+      {syntax_tools,"Syntax tools","2.1.1"},
+      {public_key,"Public key infrastructure","1.3"},
+      {asn1,"The Erlang ASN1 compiler version 4.0.4","4.0.4"},
+      {crypto,"CRYPTO","3.7.2"},
+      {stdlib,"ERTS  CXC 138 10","3.2"},
+      {kernel,"ERTS  CXC 138 10","5.1.1"}]},
+ {os,{unix,darwin}},
+ {erlang_version,
+     "Erlang/OTP 19 [erts-8.2] [source] [64-bit] [smp:8:8] [async-threads:128] [hipe] [kernel-poll:true] [dtrace]\n"},
+ {memory,
+     [{total,63362368},
+      {connection_readers,0},
+      {connection_writers,0},
+      {connection_channels,0},
+      {connection_other,2848},
+      {queue_procs,2848},
+      {queue_slave_procs,0},
+      {plugins,1971304},
+      {other_proc,19212136},
+      {mnesia,69576},
+      {mgmt_db,645632},
+      {msg_index,43160},
+      {other_ets,1728184},
+      {binary,41008},
+      {code,25319614},
+      {atom,1041593},
+      {other_system,13284465}]},
+ {alarms,[]},
+ {listeners,
+     [{clustering,25672,"::"},
+      {amqp,5672,"127.0.0.1"},
+      {mqtt,1883,"::"},
+      {stomp,61613,"::"}]},
+ {vm_memory_high_watermark,0.4},
+ {vm_memory_limit,6060687360},
+ {disk_free_limit,50000000},
+ {disk_free,405925216256},
+ {file_descriptors,
+     [{total_limit,3996},
+      {total_used,2},
+      {sockets_limit,3594},
+      {sockets_used,0}]},
+ {processes,[{limit,1048576},{used,276}]},
+ {run_queue,0},
+ {uptime,52},
+ {kernel,{net_ticktime,60}}]
+
+ 
+ 3. Hello World, how it works
+ 
+ P in the diagram means message sender and producer.
+ Red stack is message queue, it is an infinite buffer, unlimited size.
+ C means consumer. 
+ 
+The Java client library
+
+RabbitMQ speaks multiple protocols. This tutorial uses AMQP 0-9-1, which is an open, general-purpose protocol for messaging. There are a number of clients for RabbitMQ in many different languages. We'll use the Java client provided by RabbitMQ.
+
+Download the client library and its dependencies (SLF4J API and SLF4J Simple). Copy those files in your working directory, along the tutorials Java files.
+
+Please note SLF4J Simple is enough for tutorials but you should use a full-blown logging library like Logback in production.
+
+(The RabbitMQ Java client is also in the central Maven repository, with the groupId com.rabbitmq and th
+e artifactId amqp-client.)
+
+https://www.rabbitmq.com/tutorials/tutorial-one-java.html
+
+4. Work queues
+
+ref: https://www.rabbitmq.com/tutorials/tutorial-two-java.html
+
+1/ This tutorial assumes RabbitMQ is installed and running on localhost on standard port (5672). In case you use a different host, port or credentials, connections settings would require adjusting.
+
+2/ This concept is simple a task queue especially useful in web applications where it's impossible to handle a complex task during a short HTTP request window.
+
+3/ Round-robin dispatching
+
+If we are building up a backlog of work, we can just add more workers and that way, scale easily.
+You need three consoles open. Two will run the worker program. These consoles will be our two consumers - C1 and C2.
+
+shell1$ java -cp $CP Worker
+ [*] Waiting for messages. To exit press CTRL+C
+shell2$ java -cp $CP Worker
+ [*] Waiting for messages. To exit press CTRL+C
+ 
+ In the third one we'll publish new tasks. Once you've started the consumers you can publish a few messages:
+
+shell3$ java -cp $CP NewTask
+First message.
+shell3$ java -cp $CP NewTask
+Second message..
+shell3$ java -cp $CP NewTask
+Third message...
+shell3$ java -cp $CP NewTask
+Fourth message....
+shell3$ java -cp $CP NewTask
+Fifth message.....
+Let's see what is delivered to our workers:
+
+shell1$ java -cp $CP Worker
+ [*] Waiting for messages. To exit press CTRL+C
+ [x] Received 'First message.'
+ [x] Received 'Third message...'
+ [x] Received 'Fifth message.....'
+shell2$ java -cp $CP Worker
+ [*] Waiting for messages. To exit press CTRL+C
+ [x] Received 'Second message..'
+ [x] Received 'Fourth message....'
+
+ 
+5. publish/subscribe
+
+1/ exchange
+
+This is a complex pattern to handle that a message 
+is sent to multiple receiver.
+
+In this model, there are:
+
+producer: sends message
+queue: buffer that stores message
+consumer: receives message
+exchange: a module that should know how to handle the 
+message, to append it to one queue or more queue
+or to discard it.
+
+There are a few exchange types:
+direct, topic, headers, and fanout.
+
+For example in the logging system, fanout here is 
+to broadcast all the messages it receives to all the queus it knows.
+
+channel.exchangeDeclare("logs", "fanout");
+
+To list the exchanges on the server you can run the rabbitmqctl,
+$ sudo rabbitmqctl list_exchanges
+
+2/ nameless exchange
+channel.basicPublish("", "hello", null, message.getBytes());
+
+The first parameter is the the name of the exchange. The empty string denotes the default or 
+nameless exchange: messages are routed to the queue with the name specified by routingKey, if it exists.
+
+Now, we can publish to our named exchange instead:
+
+channel.basicPublish( "logs", "", null, message.getBytes());
+
+3/ Temporary queue
+
+Sometimes we need a name for the queue so we know where to send messages.
+
+Sometimes we don't. In the Java client, when we supply no parameters to queueDeclare() we create a non-durable, exclusive, autodelete queue with a generated name:
+
+String queueName = channel.queueDeclare().getQueue();
+
+At that point queueName contains a random queue name. For example it may look like amq.gen-JzTY20BRgKO-HjmUJj0wLg.
+
+4/ Bindings
+We've already created a fanout exchange and a queue. Now we need to tell the exchange to send messages to our queue. 
+That relationship between exchange and a queue is called a binding.
+
+channel.queueBind(queueName, "logs", "");
+
+To check all the bindings, using command,
+
+rabbitmqctl list_bindings
+
+
+A example code, 
+
+import java.io.IOException;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.Channel;
+
+public class EmitLog {
+
+    private static final String EXCHANGE_NAME = "logs";
+
+    public static void main(String[] argv)
+                  throws java.io.IOException {
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
+        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+
+        String message = getMessage(argv);
+
+        channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
+        System.out.println(" [x] Sent '" + message + "'");
+
+        channel.close();
+        connection.close();
+    }
+    //...
+}
+
+The above code is to send out the messages, it is not 
+responsible for binding the queue to the exchange.
+
+xiaofengmaclap:RabbitmqTest xiaofeng$ javac -cp $CP ./EmitLog.java 
+xiaofengmaclap:RabbitmqTest xiaofeng$ javac -cp $CP ./ReceiveLogs.java 
+xiaofengmaclap:RabbitmqTest xiaofeng$ echo $CP
+.:/Users/xiaofeng/Documents/workspace-amz/RabbitmqTest/target/dependency/amqp-client-4.0.2.jar:/Users/xiaofeng/Documents/workspace-amz/RabbitmqTest/target/dependency/slf4j-api-1.7.21.jar/slf4j-simple-1.7.12.jar
+
