@@ -1,0 +1,20 @@
+package com.webbertech.java.runtime;
+
+public class MemoryTest{  
+	 public static void main(String args[])throws Exception{  
+	  Runtime r=Runtime.getRuntime();  
+	  System.out.println("Total Memory: "+r.totalMemory());  
+	  System.out.println("Free Memory: "+r.freeMemory());  
+	    
+	  for(int i=0;i<10000;i++){  
+	   new MemoryTest();  
+	  }  
+	  
+	  long before = r.freeMemory();
+	  System.out.println("After creating 10000 instance, Free Memory: "+before);  
+	  System.gc();  
+	  long after = r.freeMemory();
+	  System.out.println("After gc(), Free Memory: "+ after);
+	  System.out.println("freed memory: " + (after-before));  
+	 }  
+	}  
