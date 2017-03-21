@@ -1,0 +1,5 @@
+run:
+
+webpack entry.js bundle.js
+
+will generate bundle.js based on entry.js and other component jsx files.
