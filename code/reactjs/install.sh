@@ -10,4 +10,6 @@ npm install babel-core
 npm install babel-loader
 npm install babel-preset-react
 npm install babel-preset-es2015
-npm install jquery
+npm install jquery --save
+npm install react-router --save
+npm install react-redux --save
