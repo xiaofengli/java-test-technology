@@ -1,6 +1,6 @@
 var config = {
    context: __dirname,
-   entry:'/Users/xiaofeng/tutorial/code/reactjs/reactApp/main.js',
+   entry:'/Users/xiaofeng/tutorial/code/reactjs/reactBasicApp/main.js',
 
    output: {
       path:__dirname,
