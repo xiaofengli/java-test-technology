@@ -1,0 +1,28 @@
+Linux and SQL
+
+Abstract: This document provides information
+for interview purpose so the content is selective.
+Linux knowledge is not for system administration
+or basic usage of the windowing system or programming tools
+or software. It is about system build-in commands
+and scripting capability.
+
+Chapter 1 Linux Knowledge
+
+1. Basic command checklist
+
+
+
+2. Find, grep, -exec, pipe, redirection
+touch, vi
+
+
+Chapter 2 SQL Knowledge
+
+Chapter 3 Relational DBMS
+MySQL
+MariaDB
+HBase
+
+
+Chapter 4 NoSQL
