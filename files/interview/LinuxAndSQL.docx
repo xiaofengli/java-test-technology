@@ -1,23 +1,64 @@
-Linux and SQL
+﻿Linux and SQL
+Date: 03-23-2017
 
-Abstract: This document provides information
-for interview purpose so the content is selective.
-Linux knowledge is not for system administration
-or basic usage of the windowing system or programming tools
-or software. It is about system build-in commands
-and scripting capability.
+Abstract: This document provides information for interview purpose so the content is selective. Linux knowledge is not for system administration or basic usage of the windowing system or programming toolsor software. It is about system build-in commands and scripting capability.
 
 Chapter 1 Linux Knowledge
 
 1. Basic command checklist
 
+Basic commands: 
 
+Directory: ～，cd, rm, mkdir,mv, ls, cp, cat, chown, chgrp,chmod, ln
+Process: ps, kill, at, bg,fg, crontab, nice, time, id, whoami, who, what, which,, 		   df, du, nohup
+Text: touch, vi, wc, tr, split, cut, sort, join, file
+	Head, tail, tee, uname
+Permission: ulimit, umask, 
+Scripting: alias, unalias, sh, sed, awk, pr,
+		sleep, test, read, diff, dirname, uniq, basename, nl, less, more, echo, 		printf
+Searching: find,  grep, exec, xargs
+Network: netcat
+Documentation: man
+Software Development: ar, make, nm, yacc, lex, strip, ctags
+System administration: mount, umount , lsof...etc
 
-2. Find, grep, -exec, pipe, redirection
+Find, grep, -exec, pipe, redirection
 touch, vi
+
+How to kill all the processes with a name? For example, kernels processes.
+How to find out a file named xxx in all the directory underneath?
+How to delete a file in all places with a name xxx?
+How to show a pid and ppid of a process?
+
+
+2.files
+
+/etc/iptables
+/etc/profile
+~/.bash_profile
+~/.bash_rc
+/etc/init.d
+
+filewall
+init scripts
+
+3. File system
+understand disk partition
+understand how to mount nfs
+
 
 
 Chapter 2 SQL Knowledge
+
+What is primary key?
+What is a key?
+What is a index?
+What is the difference between index and key?
+What is group by?
+What is having?
+
+If programs runs slow, how to optimize?
+
 
 Chapter 3 Relational DBMS
 MySQL
