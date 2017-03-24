@@ -13,3 +13,4 @@ npm install babel-preset-es2015
 npm install jquery --save
 npm install react-router --save
 npm install react-redux --save
+npm install react-addons-css-transition-group --save
