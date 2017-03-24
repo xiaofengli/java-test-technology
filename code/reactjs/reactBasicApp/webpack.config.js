@@ -1,6 +1,6 @@
 var config = {
    context: __dirname,
-   entry:'/Users/xiaofeng/tutorial/code/reactjs/reactBasicApp/main.js',
+   entry:__dirname+'/main.js',
 
    output: {
       path:__dirname,
@@ -9,7 +9,7 @@ var config = {
 
    devServer: {
       inline: true,
-      port: 8081
+      port: 8082
    },
 
    module: {
