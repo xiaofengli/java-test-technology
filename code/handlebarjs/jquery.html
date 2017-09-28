@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Title of the document</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+
+<body>
+<h1>Test of handlebar </h1>
+<!--This example uses jquery dom traversal.
+Everything is in the pure javascript script block.
+-->
+<div id="data"></div>
+
+<script>
+var myInfo="My name is {{name}} and I live at {{street}} in {{city}}, {{state}}";
+var template=Handlebars.compile(myInfo);
+var json={name: "derek", street: "123 main st", city: "Pittsburgh", state:"PA"};
+var data=template(json);
+$("#data").html(data);
+</script>
+
+</body>
+</html>

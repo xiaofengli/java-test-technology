@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Title of the document</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+
+<!-- 
+This example shows about the escape example of handlebar.
+The following things should be noted:
+
+1/ the reference of context in a json format using dot.
+2/ since the template is recommended to be put inside <script> tag with special 
+type = text/x-handlebars-template. This way it keeps it clean.
+3/ Pure js in <script> tag, where as you can get the template using dom traversal of pure js
+or jquery. Then pass the template to the compile function to get a compiled template.
+Then pass the data/json to the compile template object and generate the output result.
+4/ render the output using jquery or js innerHTML 
+
+----->
+
+<script id="expressions-template" type="text/x-handlebars-template">
+  {{description.escaped}}
+  {{example}}
+
+  <br><br>
+
+  {{description.unescaped}}
+  {{{example}}}
+</script>
+
+<div id="content-placeholder"></div>
+
+<script>
+	  // Grab the template script, using jquery
+	  var theTemplateScript = $("#expressions-template").html();
+	  // Compile the template
+	  var theTemplate = Handlebars.compile(theTemplateScript);
+	  // Define our data object
+	  var context={
+	    "description": {
+	      "escaped": "Using {{}} brackets will result in escaped HTML:",
+	      "unescaped": "Using {{{}}} will leave the context as it is:"
+	    },
+	    "example": "<button> Hello </button>"
+	  };
+	  // Pass our data to the template
+	  var theCompiledHtml = theTemplate(context);
+	  // Add the compiled html to the page
+	  $('#content-placeholder').html(theCompiledHtml);
+</script>
+
+
+</body>
+</html>
