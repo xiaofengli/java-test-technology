@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Title of the document</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- The #each helper iterates over an array of items. -->
+<script id="example-template" type="text/x-handlebars-template">
+  <!-- people is looked up on the global context, the one we pass to the compiled template -->
+  {{#each people}}
+    <!-- Here the context is each individual person. So we can access its properties directly: -->
+    <p>{{firstName}} {{lastName}}</p>
+
+  {{/each}}
+</script>
+
+</head>
+
+<body>
+<h1>Test of handlebar </h1>
+<!--This example uses jquery dom traversal.
+Everything is in the pure javascript script block.
+Uses a document.ready function will load it upon page loading
+-->
+<div id="data"></div>
+
+<script>
+$(function () {
+	  // Grab the template script
+	  var theTemplateScript = $("#example-template").html();
+	  // Compile the template
+	  var theTemplate = Handlebars.compile(theTemplateScript);
+	  // This is the default context, which is passed to the template
+	  var context = {
+	    people: [ 
+	      { firstName: 'Homer', lastName: 'Simpson' },
+	      { firstName: 'Peter', lastName: 'Griffin' },
+	      { firstName: 'Eric', lastName: 'Cartman' },
+	      { firstName: 'Kenny', lastName: 'McCormick' },
+	      { firstName: 'Bart', lastName: 'Simpson' }
+	    ]
+	  };
+
+	  // Pass our data to the template
+	  var theCompiledHtml = theTemplate(context);
+
+	  // Add the compiled html to the page
+	  $(document.body).append(theCompiledHtml);
+	});
+</script>
+</body>
+</html>
