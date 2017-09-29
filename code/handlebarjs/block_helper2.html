@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--This example you actually creates a block helper-->
+<html>
+<head>
+<title>Title of the document</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script id="block-expressions-template" type="text/x-handlebars-template">
+  <p> The <b> {{#uppercase}} konami {{/uppercase}} </b> Code is a cheat code that appears in many video games.</p>
+  <p>During the title screen before the game demo begins, the player could press the following sequence of buttons on the game controller to enable the cheat:</p>
+  <p>{{#uppercase}}{{code}}{{/uppercase}}</p>
+  <p>The code is also present as an {{#bold}} Easter egg {{/bold}} on a number of websites.</p>
+</script>
+</head>
+<body>
+<div class="content-placeholder"></div>
+<script>
+$(function () {
+	  // Grab the template script
+	  var theTemplateScript = $("#block-expressions-template").html();
+	  // This is our block helper
+	  // The name of our helper is provided as the first parameter - in this case 'uppercase'
+	  Handlebars.registerHelper('uppercase', function(options) {
+	    // "this" is the context that existed when calling the helper.
+        // The options object has a special function - fn. This is a
+	    // compiled version of the template that is contained between the opening and closing
+	    // blocks of this helper. To get a string, call fn with the context:
+	    return options.fn(this).toUpperCase();
+	  });
+
+	  
+	  
+	  Handlebars.registerHelper('bold', function(options) {
+		  return new Handlebars.SafeString(
+		      '<b>'
+		      + options.fn(this)
+		      + '</b>');
+		});
+	  
+	  // Compile the template
+	  var theTemplate = Handlebars.compile(theTemplateScript);
+
+	  // Define our data object
+	  var context = {
+	    "code": "up up down down left right left right b a select start"
+	  };
+	  // Pass our data to the template
+	  var theCompiledHtml = theTemplate(context);
+	  // Add the compiled html to the page
+	  $('.content-placeholder').html(theCompiledHtml);
+	});
+</script>
+</body>
+</html>
