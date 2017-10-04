@@ -1,0 +1,21 @@
+{
+  "name": "simple_app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "clean-webpack-plugin": "^0.1.17",
+    "csv-loader": "^2.1.1",
+    "file-loader": "^1.1.4",
+    "html-webpack-plugin": "^2.30.1",
+    "lodash": "^4.17.4",
+    "webpack": "^3.6.0",
+    "xml-loader": "^1.2.1"
+  }
+}

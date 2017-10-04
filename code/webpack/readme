@@ -1,0 +1,2 @@
+Most of the project, do 'npm run build'.
+If fail, copy the lib_install.sh to the directory of the project and run it to install the libs.
