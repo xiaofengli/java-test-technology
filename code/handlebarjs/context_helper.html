@@ -12,7 +12,7 @@ people is looked up on the global context, the one we pass to the compiled templ
 <script id="example-template" type="text/x-handlebars-template">
   {{#each people}}
     <!-- Here the context is each individual person. So we can access its properties directly: -->
-    <p>{{firstName}} {{lastName}}</p>
+    <p>{{firstName}} {{{lastName}}}</p>
   {{/each}}
 </script>
 
@@ -27,7 +27,7 @@ $(function () {
 	  // This is the default context, which is passed to the template
 	  var context = {
 	    people: [ 
-	      { firstName: 'Homer', lastName: 'Simpson' },
+	      { firstName: 'Homer', lastName: 'V&#237;deo' },
 	      { firstName: 'Peter', lastName: 'Griffin' },
 	      { firstName: 'Eric', lastName: 'Cartman' },
 	      { firstName: 'Kenny', lastName: 'McCormick' },
