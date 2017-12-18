@@ -1,0 +1,55 @@
+@CHARSET "UTF-8";
+
+body {
+    width: 100%;
+    margin: auto;
+}
+
+/* container is used to define the header and the content
+to be in the center*/
+.container {
+ 	width: 960px;
+ 	margin: 0 auto;	
+ 
+}
+
+/* simply just make it fixed and expand to 100%*/
+header {
+	top: 0;               
+    position: fixed;      
+    width:100%;
+    /*background: #6396bc;*/
+   
+    /* background:rgba(0, 0, 0, 0.8); */
+    background: #fff; 
+    color: #333;
+}
+
+.logo {
+   float: left;
+   content:url("images/header_logo.jpg");
+   width:500px; /*width of your image*/
+   height:80px; /*height of your image*/
+}
+
+.nav {
+	float: right;
+	padding-top: 40px;
+}
+
+footer {
+		background:#333;
+		height: 100px;
+		color:#999;
+}
+
+p {
+	padding-top:80px;
+    font-family: verdana;
+    font-size: 15px;   
+}
+
+a {
+	text-docoration: none;
+	color: #333;
+}
